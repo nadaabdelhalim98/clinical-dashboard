@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindBridge — Intervention Loop Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&family=Azeret+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0a0d14;
+  --bg2:      #111520;
+  --bg3:      #181d2a;
+  --border:   #1e2535;
+  --border2:  #2a3348;
+  --ink:      #e4e8f0;
+  --mid:      #7a8499;
+  --muted:    #3a4258;
+
+  --patient:  #4a9ec4;
+  --patient-l:#1a3a4a;
+  --patient-g:rgba(74,158,196,0.15);
+
+  --hcp:      #5ab87a;
+  --hcp-l:    #1a3a28;
+  --hcp-g:    rgba(90,184,122,0.15);
+
+  --gap:      #c45a5a;
+  --gap-l:    #3a1a1a;
+  --gap-g:    rgba(196,90,90,0.2);
+
+  --gold:     #c4a04a;
+  --gold-g:   rgba(196,160,74,0.15);
+
+  --mono:     'Azeret Mono', monospace;
+  --serif:    'Crimson Pro', Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+.hdr {
+  padding: 20px 40px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-end; justify-content: space-between;
+  background: var(--bg2);
+}
+.hdr-left {}
+.hdr-eyebrow {
+  font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--patient); margin-bottom: 5px;
+}
+.hdr-title {
+  font-family: var(--serif);
+  font-size: 1.5rem; font-weight: 300;
+  color: var(--ink); line-height: 1.2;
+}
+.hdr-title em { font-style: italic; color: var(--gold); }
+.hdr-right { text-align: right; }
+.hdr-meta { font-size: 0.62rem; color: var(--muted); line-height: 2; }
+
+/* ── LEGEND ── */
+.legend-bar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 40px;
+  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+}
+.leg { display: flex; align-items: center; gap: 7px; font-size: 0.62rem; color: var(--mid); }
+.leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.leg-line { width: 20px; height: 2px; flex-shrink: 0; }
+.leg-line.dashed { background: repeating-linear-gradient(90deg, var(--gap) 0, var(--gap) 4px, transparent 4px, transparent 8px); }
+.leg-sep { width: 1px; height: 16px; background: var(--border2); }
+
+/* ── MAIN LAYOUT ── */
+.main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* ── DIAGRAM AREA ── */
+.diagram-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle grid */
+.diagram-area::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.3;
+}
+
+.diagram-wrap {
+  position: relative;
+  width: 560px; height: 560px;
+  flex-shrink: 0;
+}
+
+/* ── SVG DIAGRAM ── */
+#loop-svg {
+  width: 100%; height: 100%;
+  overflow: visible;
+}
+
+/* node circles */
+.node-outer {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.node-outer:hover .node-bg { filter: brightness(1.3); }
+.node-outer:hover .node-ring { stroke-opacity: 0.8; }
+
+/* pulse animation for gap node */
+@keyframes gapPulse {
+  0%, 100% { opacity: 0.3; r: 32px; }
+  50% { opacity: 0.7; r: 40px; }
+}
+@keyframes flowPulse {
+  0% { stroke-dashoffset: 200; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes dotFlow {
+  0% { offset-distance: 0%; }
+  100% { offset-distance: 100%; }
+}
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.flow-dot {
+  animation: dotFlow 3s linear infinite;
+}
+
+/* ── SIDE PANEL ── */
+.side-panel {
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.panel-section {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-label {
+  font-size: 0.58rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 12px;
+}
+.loop-item {
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: 1px solid transparent;
+}
+.loop-item:hover { background: var(--bg3); }
+.loop-item.active { background: var(--bg3); border-color: var(--border2); }
+.loop-item-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+}
+.loop-item-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.loop-item-num {
+  font-size: 0.58rem; color: var(--muted); flex-shrink: 0;
+}
+.loop-item-name { font-size: 0.74rem; font-weight: 500; color: var(--ink); }
+.loop-item-desc { font-size: 0.68rem; color: var(--mid); line-height: 1.5; padding-left: 16px; }
+.loop-item-tag {
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 0.5px;
+  padding: 1px 6px; border-radius: 2px;
+  margin-left: auto; flex-shrink: 0;
+}
+
+/* gap callout */
+.gap-callout {
+  background: var(--gap-l);
+  border: 1px solid rgba(196,90,90,0.3);
+  border-left: 3px solid var(--gap);
+  border-radius: 0 6px 6px 0;
+  padding: 12px 14px;
+  margin-bottom: 0;
+}
+.gap-callout-title {
+  font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--gap); margin-bottom: 6px;
+}
+.gap-callout-body {
+  font-size: 0.68rem; color: var(--mid); line-height: 1.6;
+  font-family: var(--serif); font-style: italic;
+}
+
+/* detail box */
+.detail-box {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  animation: fadeIn 0.2s ease;
+}
+.detail-box-title {
+  font-size: 0.7rem; font-weight: 600; color: var(--ink); margin-bottom: 6px;
+  display: flex; align-items: center; gap: 7px;
+}
+.detail-box-body { font-size: 0.67rem; color: var(--mid); line-height: 1.65; }
+.detail-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.dchip {
+  font-size: 0.58rem; padding: 2px 6px; border-radius: 2px;
+  background: var(--bg2); border: 1px solid var(--border2); color: var(--muted);
+}
+
+/* toggle view */
+.view-toggle {
+  display: flex; padding: 12px 20px; gap: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.vtb {
+  flex: 1; padding: 6px; border-radius: 4px;
+  font-size: 0.62rem; font-weight: 600;
+  cursor: pointer; text-align: center;
+  border: 1px solid var(--border2);
+  background: var(--bg3); color: var(--muted);
+  transition: all 0.14s; font-family: var(--mono);
+}
+.vtb.active { background: var(--border2); color: var(--ink); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 10px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+footer div { font-size: 0.6rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-eyebrow">MindBridge · Mental Health DiGA · System Design</div>
+    <div class="hdr-title">The <em>Intervention Loop</em><br>Patient × HCP × System</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-meta">Two loops · one break point<br>Behaviour change architecture<br>Nada Abdelhalim · 2026</div>
+  </div>
+</header>
+
+<div class="legend-bar">
+  <div class="leg"><div class="leg-dot" style="background:var(--patient)"></div>Patient inner loop</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--hcp)"></div>HCP outer loop</div>
+  <div class="leg"><div class="leg-line dashed"></div>Break point / gap</div>
+  <div class="leg-sep"></div>
+  <div class="leg"><div class="leg-dot" style="background:var(--gold)"></div>System / automated</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--gap)"></div>Critical failure point</div>
+  <div class="leg-sep"></div>
+  <div class="leg" style="font-style:italic;color:var(--muted)">Click any node for detail</div>
+</div>
+
+<div class="main">
+
+  <!-- DIAGRAM -->
+  <div class="diagram-area">
+    <div class="diagram-wrap">
+      <svg id="loop-svg" viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- glows -->
+          <filter id="glow-patient" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-hcp" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-gap" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="8" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+
+          <!-- arrow markers -->
+          <marker id="arrow-patient" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="rgba(74,158,196,0.7)"/>
+          </marker>
+          <marker id="arrow-hcp" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="rgba(90,184,122,0.7)"/>
+          </marker>
+          <marker id="arrow-gap" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="rgba(196,90,90,0.7)"/>
+          </marker>
+          <marker id="arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="rgba(196,160,74,0.7)"/>
+          </marker>
+
+          <!-- animated dash patterns -->
+          <style>
+            .arc-patient { animation: flowPulse 4s linear infinite; }
+            .arc-hcp { animation: flowPulse 6s linear infinite; }
+            .gap-pulse { animation: gapPulse 2s ease-in-out infinite; }
+          </style>
+        </defs>
+
+        <!-- ── OUTER RING: HCP LOOP (r=240) ── -->
+        <!-- Background ring -->
+        <circle cx="280" cy="280" r="240" fill="none" stroke="rgba(90,184,122,0.08)" stroke-width="60"/>
+        <circle cx="280" cy="280" r="240" fill="none" stroke="rgba(90,184,122,0.15)" stroke-width="1.5" stroke-dasharray="6 4"/>
+
+        <!-- ── INNER RING: PATIENT LOOP (r=140) ── -->
+        <circle cx="280" cy="280" r="140" fill="none" stroke="rgba(74,158,196,0.08)" stroke-width="50"/>
+        <circle cx="280" cy="280" r="140" fill="none" stroke="rgba(74,158,196,0.15)" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+        <!-- ── CENTER ── -->
+        <circle cx="280" cy="280" r="48" fill="rgba(196,160,74,0.06)" stroke="rgba(196,160,74,0.25)" stroke-width="1.5"/>
+        <circle cx="280" cy="280" r="32" fill="rgba(196,160,74,0.1)" stroke="rgba(196,160,74,0.4)" stroke-width="1"/>
+        <!-- Center label -->
+        <text x="280" y="274" text-anchor="middle" font-family="'Azeret Mono'" font-size="8" fill="rgba(196,160,74,0.9)" font-weight="600" letter-spacing="1">MIND</text>
+        <text x="280" y="285" text-anchor="middle" font-family="'Azeret Mono'" font-size="8" fill="rgba(196,160,74,0.9)" font-weight="600" letter-spacing="1">BRIDGE</text>
+        <text x="280" y="296" text-anchor="middle" font-family="'Azeret Mono'" font-size="6" fill="rgba(196,160,74,0.5)" letter-spacing="0.5">SYSTEM</text>
+
+        <!-- ══ PATIENT INNER LOOP NODES (r=140) ══ -->
+        <!-- Positions: Top=270°, Right=0°, Bottom=90°, Left=180° -->
+        <!-- Trigger (Top) — 270° → x=280, y=140 -->
+        <g class="node-outer" onclick="selectNode('trigger')">
+          <circle cx="280" cy="140" r="34" fill="rgba(74,158,196,0.12)" stroke="rgba(74,158,196,0.4)" stroke-width="1.5" class="node-ring"/>
+          <circle cx="280" cy="140" r="26" fill="rgba(74,158,196,0.2)" class="node-bg"/>
+          <text x="280" y="136" text-anchor="middle" font-family="'Azeret Mono'" font-size="7.5" fill="rgba(74,158,196,1)" font-weight="600" letter-spacing="0.5">TRIGGER</text>
+          <text x="280" y="147" text-anchor="middle" font-family="'Crimson Pro'" font-size="8" fill="rgba(74,158,196,0.7)" font-style="italic">push / cue</text>
+        </g>
+
+        <!-- Action (Right) — 0° → x=420, y=280 -->
+        <g class="node-outer" onclick="selectNode('action')">
+          <circle cx="420" cy="280" r="34" fill="rgba(74,158,196,0.12)" stroke="rgba(74,158,196,0.4)" stroke-width="1.5" class="node-ring"/>
+          <circle cx="420" cy="280" r="26" fill="rgba(74,158,196,0.2)" class="node-bg"/>
+          <text x="420" y="276" text-anchor="middle" font-family="'Azeret Mono'" font-size="7.5" fill="rgba(74,158,196,1)" font-weight="600" letter-spacing="0.5">ACTION</text>
+          <text x="420" y="287" text-anchor="middle" font-family="'Crimson Pro'" font-size="8" fill="rgba(74,158,196,0.7)" font-style="italic">session / log</text>
+        </g>
+
+        <!-- Feedback (Bottom) — 90° → x=280, y=420 -->
+        <g class="node-outer" onclick="selectNode('feedback')">
+          <circle cx="280" cy="420" r="34" fill="rgba(74,158,196,0.12)" stroke="rgba(74,158,196,0.4)" stroke-width="1.5" class="node-ring"/>
+          <circle cx="280" cy="420" r="26" fill="rgba(74,158,196,0.2)" class="node-bg"/>
+          <text x="280" y="416" text-anchor="middle" font-family="'Azeret Mono'" font-size="7.5" fill="rgba(74,158,196,1)" font-weight="600" letter-spacing="0.5">FEEDBACK</text>
+          <text x="280" y="427" text-anchor="middle" font-family="'Crimson Pro'" font-size="8" fill="rgba(74,158,196,0.7)" font-style="italic">score / trend</text>
+        </g>
+
+        <!-- Reward (Left) — 180° → x=140, y=280 -->
+        <g class="node-outer" onclick="selectNode('reward')">
+          <circle cx="140" cy="280" r="34" fill="rgba(74,158,196,0.12)" stroke="rgba(74,158,196,0.4)" stroke-width="1.5" class="node-ring"/>
+          <circle cx="140" cy="280" r="26" fill="rgba(74,158,196,0.2)" class="node-bg"/>
+          <text x="140" y="276" text-anchor="middle" font-family="'Azeret Mono'" font-size="7.5" fill="rgba(74,158,196,1)" font-weight="600" letter-spacing="0.5">REWARD</text>
+          <text x="140" y="287" text-anchor="middle" font-family="'Crimson Pro'" font-size="8" fill="rgba(74,158,196,0.7)" font-style="italic">progress</text>
+        </g>
+
+        <!-- PATIENT LOOP ARROWS (curved arcs between nodes) -->
+        <!-- Trigger → Action -->
+        <path d="M 306 115 A 140 140 0 0 1 445 254" fill="none" stroke="rgba(74,158,196,0.5)" stroke-width="1.5" marker-end="url(#arrow-patient)" stroke-dasharray="200" stroke-dashoffset="0">
+          <animate attributeName="stroke-dashoffset" values="200;0" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <!-- Action → Feedback -->
+        <path d="M 445 306 A 140 140 0 0 1 306 445" fill="none" stroke="rgba(74,158,196,0.5)" stroke-width="1.5" marker-end="url(#arrow-patient)" stroke-dasharray="200" stroke-dashoffset="0">
+          <animate attributeName="stroke-dashoffset" values="200;0" dur="3s" begin="0.75s" repeatCount="indefinite"/>
+        </path>
+        <!-- Feedback → Reward -->
+        <path d="M 254 445 A 140 140 0 0 1 115 306" fill="none" stroke="rgba(74,158,196,0.5)" stroke-width="1.5" marker-end="url(#arrow-patient)" stroke-dasharray="200" stroke-dashoffset="0">
+          <animate attributeName="stroke-dashoffset" values="200;0" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+        </path>
+        <!-- Reward → Trigger -->
+        <path d="M 115 254 A 140 140 0 0 1 254 115" fill="none" stroke="rgba(74,158,196,0.5)" stroke-width="1.5" marker-end="url(#arrow-patient)" stroke-dasharray="200" stroke-dashoffset="0">
+          <animate attributeName="stroke-dashoffset" values="200;0" dur="3s" begin="2.25s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- ══ HCP OUTER LOOP NODES (r=240) ══ -->
+        <!-- PGHD Aggregation (Top-Right) — 315° → x=450, y=110 -->
+        <g class="node-outer" onclick="selectNode('pghd')">
+          <circle cx="450" cy="110" r="36" fill="rgba(196,160,74,0.1)" stroke="rgba(196,160,74,0.35)" stroke-width="1.5" class="node-ring"/>
+          <circle cx="450" cy="110" r="27" fill="rgba(196,160,74,0.15)" class="node-bg"/>
+          <text x="450" y="104" text-anchor="middle" font-family="'Azeret Mono'" font-size="6.5" fill="rgba(196,160,74,0.95)" font-weight="600" letter-spacing="0.5">PGHD</text>
+          <text x="450" y="114" text-anchor="middle" font-family="'Azeret Mono'" font-size="6.5" fill="rgba(196,160,74,0.95)" font-weight="600" letter-spacing="0.5">AGGREG.</text>
+          <text x="450" y="124" text-anchor="middle" font-family="'Crimson Pro'" font-size="7.5" fill="rgba(196,160,74,0.6)" font-style="italic">automated</text>
+        </g>
+
+        <!-- HCP Review (Right) — 45° → x=450, y=450 (bottom-right) -->
+        <!-- Actually: 45° from top = x=280+240*sin45, y=280-240*cos45 = 450,110 (already used) -->
+        <!-- Let me use: HCP Review at 30°, Escalation at 150°, KK/Renewal at 210°, Re-engage at 330° -->
+        <!-- 30° → x=280+240*sin30, y=280-240*cos30 = 400, 72 — too close to PGHD -->
+        <!-- Reposition: PGHD=330°, HCP Review=30°, Escalation=150°, Renewal=210°, Reengagement=270°(same as trigger — skip) -->
+        <!-- Clean 4-node outer: NE=45°, SE=135°, SW=225°, NW=315° -->
+
+        <!-- HCP Review — SE (135°) → x=280+240*sin135, y=280-240*cos135 = 450, 450 -->
+        <g class="node-outer" onclick="selectNode('hcp-review')">
+          <circle cx="450" cy="450" r="36" fill="rgba(90,184,122,0.1)" stroke="rgba(90,184,122,0.35)" stroke-width="1.5" class="node-ring"/>
+          <circle cx="450" cy="450" r="27" fill="rgba(90,184,122,0.15)" class="node-bg"/>
+          <text x="450" y="444" text-anchor="middle" font-family="'Azeret Mono'" font-size="6.5" fill="rgba(90,184,122,0.95)" font-weight="600" letter-spacing="0.5">HCP</text>
+          <text x="450" y="454" text-anchor="middle" font-family="'Azeret Mono'" font-size="6.5" fill="rgba(90,184,122,0.95)" font-weight="600" letter-spacing="0.5">REVIEW</text>
+          <text x="450" y="464" text-anchor="middle" font-family="'Crimson Pro'" font-size="7.5" fill="rgba(90,184,122,0.6)" font-style="italic">follow-up</text>
+        </g>
+
+        <!-- Clinical Decision — SW (225°) → x=280+240*sin225, y=280-240*cos225 = 110, 450 -->
+        <g class="node-outer" onclick="selectNode('decision')">
+          <circle cx="110" cy="450" r="36" fill="rgba(90,184,122,0.1)" stroke="rgba(90,184,122,0.35)" stroke-width="1.5" class="node-ring"/>
+          <circle cx="110" cy="450" r="27" fill="rgba(90,184,122,0.15)" class="node-bg"/>
+          <text x="110" y="444" text-anchor="middle" font-family="'Azeret Mono'" font-size="6.5" fill="rgba(90,184,122,0.95)" font-weight="600" letter-spacing="0.5">CLINICAL</text>
+          <text x="110" y="454" text-anchor="middle" font-family="'Azeret Mono'" font-size="6.5" fill="rgba(90,184,122,0.95)" font-weight="600" letter-spacing="0.5">DECISION</text>
+          <text x="110" y="464" text-anchor="middle" font-family="'Crimson Pro'" font-size="7.5" fill="rgba(90,184,122,0.6)" font-style="italic">renew / escalate</text>
+        </g>
+
+        <!-- NW = 315° → x=280+240*sin315, y=280-240*cos315 = 110, 110 -->
+        <!-- Already used for PGHD at 315°. Let's call PGHD NW, HCP Review SE, Decision SW, and add Escalation NE (45°) -->
+        <!-- Escalation at 45° → x=280+240*sin45, y=280-240*cos45 = 450, 110 — same as current PGHD -->
+        <!-- Restructure: place 4 outer nodes cleanly -->
+        <!-- PGHD: top-right (already at 450,110) ✓ -->
+        <!-- HCP Review: bottom-right (450,450) ✓ -->
+        <!-- Decision: bottom-left (110,450) ✓ -->
+        <!-- Loop-back / Re-trigger: top-left (110,110) -->
+
+        <!-- Re-trigger (top-left 225° = NW) -->
+        <g class="node-outer" onclick="selectNode('retrigger')">
+          <circle cx="110" cy="110" r="36" fill="rgba(90,184,122,0.1)" stroke="rgba(90,184,122,0.35)" stroke-width="1.5" class="node-ring"/>
+          <circle cx="110" cy="110" r="27" fill="rgba(90,184,122,0.15)" class="node-bg"/>
+          <text x="110" y="104" text-anchor="middle" font-family="'Azeret Mono'" font-size="6.5" fill="rgba(90,184,122,0.95)" font-weight="600" letter-spacing="0.5">LOOP</text>
+          <text x="110" y="114" text-anchor="middle" font-family="'Azeret Mono'" font-size="6.5" fill="rgba(90,184,122,0.95)" font-weight="600" letter-spacing="0.5">RE-ENTRY</text>
+          <text x="110" y="124" text-anchor="middle" font-family="'Crimson Pro'" font-size="7.5" fill="rgba(90,184,122,0.6)" font-style="italic">renewal / adjust</text>
+        </g>
+
+        <!-- HCP OUTER LOOP ARROWS -->
+        <!-- PGHD → HCP Review -->
+        <path d="M 476 136 A 240 240 0 0 1 476 424" fill="none" stroke="rgba(90,184,122,0.4)" stroke-width="1.5" marker-end="url(#arrow-hcp)" stroke-dasharray="300" stroke-dashoffset="0">
+          <animate attributeName="stroke-dashoffset" values="300;0" dur="5s" repeatCount="indefinite"/>
+        </path>
+        <!-- HCP Review → Decision -->
+        <path d="M 424 476 A 240 240 0 0 1 136 476" fill="none" stroke="rgba(90,184,122,0.4)" stroke-width="1.5" marker-end="url(#arrow-hcp)" stroke-dasharray="300" stroke-dashoffset="0">
+          <animate attributeName="stroke-dashoffset" values="300;0" dur="5s" begin="1.25s" repeatCount="indefinite"/>
+        </path>
+        <!-- Decision → Re-trigger -->
+        <path d="M 84 424 A 240 240 0 0 1 84 136" fill="none" stroke="rgba(90,184,122,0.4)" stroke-width="1.5" marker-end="url(#arrow-hcp)" stroke-dasharray="300" stroke-dashoffset="0">
+          <animate attributeName="stroke-dashoffset" values="300;0" dur="5s" begin="2.5s" repeatCount="indefinite"/>
+        </path>
+        <!-- Re-trigger → PGHD (this is the BREAK POINT) -->
+        <path d="M 136 84 A 240 240 0 0 1 424 84" fill="none" stroke="rgba(196,90,90,0.5)" stroke-width="2" stroke-dasharray="8 5" marker-end="url(#arrow-gap)">
+          <animate attributeName="stroke-dashoffset" values="0;-26" dur="1s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- ══ BRIDGE CONNECTORS (inner ↔ outer) ══ -->
+        <!-- Feedback → PGHD (right side) -->
+        <line x1="302" y1="392" x2="428" y2="138" stroke="rgba(196,160,74,0.4)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow-gold)"/>
+        <!-- Decision → Trigger (reconnect) -->
+        <line x1="138" y1="424" x2="254" y2="155" stroke="rgba(90,184,122,0.35)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrow-hcp)"/>
+
+        <!-- ══ GAP INDICATOR ══ -->
+        <!-- Blinking circle on the break arc midpoint (top, x=280, y=40) -->
+        <circle cx="280" cy="42" r="16" fill="rgba(196,90,90,0.15)" stroke="rgba(196,90,90,0.5)" stroke-width="1.5" class="gap-pulse"/>
+        <circle cx="280" cy="42" r="10" fill="rgba(196,90,90,0.25)" stroke="rgba(196,90,90,0.7)" stroke-width="1"/>
+        <text x="280" y="39" text-anchor="middle" font-family="'Azeret Mono'" font-size="8" fill="rgba(196,90,90,0.95)" font-weight="700">!</text>
+        <text x="280" y="49" text-anchor="middle" font-family="'Azeret Mono'" font-size="5.5" fill="rgba(196,90,90,0.8)" font-weight="600">GAP</text>
+
+        <!-- Loop labels -->
+        <text x="280" y="22" text-anchor="middle" font-family="'Azeret Mono'" font-size="6" fill="rgba(196,90,90,0.7)" letter-spacing="1">NO STANDARDISED HCP→PATIENT FEEDBACK PATH</text>
+
+        <!-- Ring labels -->
+        <text x="446" y="280" text-anchor="start" font-family="'Azeret Mono'" font-size="6" fill="rgba(90,184,122,0.5)" letter-spacing="0.5" transform="rotate(90,446,280)">HCP OUTER LOOP</text>
+        <text x="236" y="280" text-anchor="start" font-family="'Azeret Mono'" font-size="6" fill="rgba(74,158,196,0.5)" letter-spacing="0.5" transform="rotate(90,236,280)">PATIENT INNER LOOP</text>
+
+      </svg>
+    </div>
+  </div>
+
+  <!-- SIDE PANEL -->
+  <div class="side-panel">
+    <div class="view-toggle">
+      <div class="vtb active" onclick="setPanelView('nodes',this)">Loop Nodes</div>
+      <div class="vtb" onclick="setPanelView('gap',this)">Break Point</div>
+      <div class="vtb" onclick="setPanelView('design',this)">Design Notes</div>
+    </div>
+
+    <!-- NODES VIEW -->
+    <div id="panel-nodes">
+      <div class="panel-section">
+        <div class="panel-label">Patient Inner Loop</div>
+
+        <div id="detail-area"></div>
+
+        <div class="loop-item" onclick="selectNode('trigger')">
+          <div class="loop-item-header">
+            <div class="loop-item-dot" style="background:var(--patient)"></div>
+            <div class="loop-item-num">P1</div>
+            <div class="loop-item-name">Trigger</div>
+            <div class="loop-item-tag" style="background:rgba(74,158,196,0.1);color:var(--patient);border:1px solid rgba(74,158,196,0.3)">Patient</div>
+          </div>
+          <div class="loop-item-desc">Push notification, scheduled reminder, or internal emotional cue. Brings patient back to the app.</div>
+        </div>
+
+        <div class="loop-item" onclick="selectNode('action')">
+          <div class="loop-item-header">
+            <div class="loop-item-dot" style="background:var(--patient)"></div>
+            <div class="loop-item-num">P2</div>
+            <div class="loop-item-name">Action</div>
+            <div class="loop-item-tag" style="background:rgba(74,158,196,0.1);color:var(--patient);border:1px solid rgba(74,158,196,0.3)">Patient</div>
+          </div>
+          <div class="loop-item-desc">Completes CBT module, logs mood/symptoms, does a breathing exercise. The therapeutic act.</div>
+        </div>
+
+        <div class="loop-item" onclick="selectNode('feedback')">
+          <div class="loop-item-header">
+            <div class="loop-item-dot" style="background:var(--patient)"></div>
+            <div class="loop-item-num">P3</div>
+            <div class="loop-item-name">Feedback</div>
+            <div class="loop-item-tag" style="background:rgba(196,160,74,0.1);color:var(--gold);border:1px solid rgba(196,160,74,0.3)">System</div>
+          </div>
+          <div class="loop-item-desc">App reflects data back: PHQ-9 trend, mood graph, session streak. Must feel meaningful — not just a counter.</div>
+        </div>
+
+        <div class="loop-item" onclick="selectNode('reward')">
+          <div class="loop-item-header">
+            <div class="loop-item-dot" style="background:var(--patient)"></div>
+            <div class="loop-item-num">P4</div>
+            <div class="loop-item-name">Reward</div>
+            <div class="loop-item-tag" style="background:rgba(74,158,196,0.1);color:var(--patient);border:1px solid rgba(74,158,196,0.3)">Patient</div>
+          </div>
+          <div class="loop-item-desc">Progress visibility — completed module, streak maintained, a message that the HCP has seen their data. Not gamification.</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-label">HCP Outer Loop</div>
+
+        <div class="loop-item" onclick="selectNode('pghd')">
+          <div class="loop-item-header">
+            <div class="loop-item-dot" style="background:var(--gold)"></div>
+            <div class="loop-item-num">H1</div>
+            <div class="loop-item-name">PGHD Aggregation</div>
+            <div class="loop-item-tag" style="background:rgba(196,160,74,0.1);color:var(--gold);border:1px solid rgba(196,160,74,0.3)">System</div>
+          </div>
+          <div class="loop-item-desc">Patient-Generated Health Data compiled into weekly report. Pain score, adherence %, session count, self-reported outcomes.</div>
+        </div>
+
+        <div class="loop-item" onclick="selectNode('hcp-review')">
+          <div class="loop-item-header">
+            <div class="loop-item-dot" style="background:var(--hcp)"></div>
+            <div class="loop-item-num">H2</div>
+            <div class="loop-item-name">HCP Review</div>
+            <div class="loop-item-tag" style="background:rgba(90,184,122,0.1);color:var(--hcp);border:1px solid rgba(90,184,122,0.3)">HCP</div>
+          </div>
+          <div class="loop-item-desc">Doctor reviews PGHD report at follow-up appointment. Interprets clinical meaning of patient-generated data.</div>
+        </div>
+
+        <div class="loop-item" onclick="selectNode('decision')">
+          <div class="loop-item-header">
+            <div class="loop-item-dot" style="background:var(--hcp)"></div>
+            <div class="loop-item-num">H3</div>
+            <div class="loop-item-name">Clinical Decision</div>
+            <div class="loop-item-tag" style="background:rgba(90,184,122,0.1);color:var(--hcp);border:1px solid rgba(90,184,122,0.3)">HCP</div>
+          </div>
+          <div class="loop-item-desc">Renew DiGA, escalate care, adjust medication, or discharge. Decision documented in PVS.</div>
+        </div>
+
+        <div class="loop-item" onclick="selectNode('retrigger')">
+          <div class="loop-item-header">
+            <div class="loop-item-dot" style="background:var(--gap)"></div>
+            <div class="loop-item-num">H4</div>
+            <div class="loop-item-name">Loop Re-entry</div>
+            <div class="loop-item-tag" style="background:rgba(196,90,90,0.1);color:var(--gap);border:1px solid rgba(196,90,90,0.3)">⚠ Gap</div>
+          </div>
+          <div class="loop-item-desc">The HCP's decision should feed back into the patient's app experience — but no standardised pathway exists. This is the break point.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAP VIEW -->
+    <div id="panel-gap" style="display:none">
+      <div class="panel-section">
+        <div class="gap-callout" style="margin-bottom:14px">
+          <div class="gap-callout-title">⚠ The Break Point</div>
+          <div class="gap-callout-body">"The HCP makes a clinical decision. The patient never knows unless they attend the next appointment."</div>
+        </div>
+        <div class="panel-label">What breaks the loop</div>
+        <div class="detail-box">
+          <div class="detail-box-title"><div class="loop-item-dot" style="background:var(--gap);width:8px;height:8px;border-radius:50%"></div>No HCP → App feedback channel</div>
+          <div class="detail-box-body">When the HCP renews the DiGA, adjusts the programme, or escalates care — that decision lives in the PVS. It does not automatically update the patient's app experience. The patient continues the same programme regardless of what the doctor decided.</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-box-title"><div class="loop-item-dot" style="background:var(--gap);width:8px;height:8px;border-radius:50%"></div>No standardised report format</div>
+          <div class="detail-box-body">Every DiGA manufacturer sends different data to HCPs. Some use KIM messages, some PDF reports, some require HCP to log into a separate portal. There is no cross-DiGA standard. This makes HCP review inconsistent and time-consuming.</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-box-title"><div class="loop-item-dot" style="background:var(--gap);width:8px;height:8px;border-radius:50%"></div>Renewal gap = treatment gap</div>
+          <div class="detail-box-body">If the HCP doesn't renew before day 90, the patient's programme closes. There is no automated renewal prompt, no grace period, and no patient notification before expiry. A missed renewal = unplanned treatment interruption.</div>
+        </div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-label">Proposed solutions</div>
+        <div class="detail-box">
+          <div class="detail-box-title" style="color:var(--hcp)">✓ Bidirectional data pathway</div>
+          <div class="detail-box-body">HCP clinical decision → triggers update in patient app. Renewal → extends programme automatically. Programme adjustment → reflected in next session.</div>
+          <div class="detail-chips">
+            <span class="dchip">ePA integration</span>
+            <span class="dchip">KIM webhook</span>
+            <span class="dchip">PVS API</span>
+          </div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-box-title" style="color:var(--hcp)">✓ Standardised HCP report</div>
+          <div class="detail-box-body">Single-page clinical summary format across all DiGA manufacturers. Embedded in PVS — no external login required.</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-box-title" style="color:var(--hcp)">✓ Automated renewal prompt</div>
+          <div class="detail-box-body">Day 80 alert to HCP: "Patient X's DiGA expires in 10 days. Renew?" One-click from PVS or KIM message.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESIGN NOTES VIEW -->
+    <div id="panel-design" style="display:none">
+      <div class="panel-section">
+        <div class="panel-label">Design Rationale</div>
+        <div class="detail-box">
+          <div class="detail-box-title">Two concentric rings</div>
+          <div class="detail-box-body">The inner ring (patient) runs faster — daily. The outer ring (HCP) runs slower — weekly to monthly. The visual size difference reflects the frequency difference. Both loops depend on each other but operate at different speeds.</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-box-title">The break point at the top</div>
+          <div class="detail-box-body">Placed at 12 o'clock deliberately — visually the highest point, the most prominent position. The gap is not hidden or minimised. It is the central design argument of this diagram.</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-box-title">Animated flow direction</div>
+          <div class="detail-box-body">Clockwise flow follows convention. The dashed animation on the break point arc moves in the opposite direction — creating visual tension exactly where the loop fails.</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-box-title">Bridge connectors</div>
+          <div class="detail-box-body">Two diagonal lines connect the inner and outer loops — Feedback → PGHD and Decision → Trigger. These represent the data handoff points between the two systems. Dashed = automated but fragile.</div>
+        </div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-label">Evidence Base</div>
+        <div class="detail-box">
+          <div class="detail-box-title">BJ Fogg — Behaviour Model</div>
+          <div class="detail-box-body">Trigger × Motivation × Ability. The patient inner loop maps directly: Trigger (prompt) → Action (ability + motivation) → Feedback (reinforcement) → Reward (motivation increase).</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-box-title">Self-Determination Theory</div>
+          <div class="detail-box-body">Autonomy, competence, relatedness. The reward node must address all three — not just streak counters. HCP acknowledgement fulfils the relatedness dimension.</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-box-title">DiGA drop-off data</div>
+          <div class="detail-box-body">~40% disengage before day 30. Peak drop-off at weeks 3–4. The inner loop friction — specifically weak feedback quality — is the primary driver. Not motivation failure.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  <div>MindBridge · Intervention Loop Diagram · Portfolio Artefact · Nada Abdelhalim · 2026</div>
+  <div>Patient inner loop · HCP outer loop · Break point analysis</div>
+</footer>
+
+<script>
+const NODE_DETAILS = {
+  trigger: {
+    title: 'Trigger', color: 'var(--patient)',
+    body: 'External or internal cue that brings the patient back to the app. Push notification (most common), scheduled alarm, or an internal emotional state. Trigger quality directly determines daily active use rate.',
+    chips: ['Push notification', 'Email', 'In-app reminder', 'Internal cue']
+  },
+  action: {
+    title: 'Action', color: 'var(--patient)',
+    body: 'The therapeutic act itself. CBT module completion, mood logging, breathing exercise, sleep tracking. Must take ≤10 minutes — cognitive load must match the patient\'s state when they open the app.',
+    chips: ['CBT module', 'Mood log', 'Breathing ex.', 'Sleep track', 'Check-in']
+  },
+  feedback: {
+    title: 'Feedback', color: 'var(--gold)',
+    body: 'The app reflects the patient\'s data back meaningfully. PHQ-9 trend, mood graph over 7 days, "You\'ve been more consistent this week." Most DiGA apps fail here — they collect data but don\'t make it feel useful.',
+    chips: ['PHQ-9 trend', 'Mood graph', 'Session streak', 'Progress %']
+  },
+  reward: {
+    title: 'Reward', color: 'var(--patient)',
+    body: 'Progress visibility — a completed module, a maintained streak, confirmation that the HCP has reviewed their data. In mental health context, avoid gamification. Clinical credibility > points.',
+    chips: ['Module complete', 'Streak badge', 'HCP notified', 'Milestone']
+  },
+  pghd: {
+    title: 'PGHD Aggregation', color: 'var(--gold)',
+    body: 'System compiles Patient-Generated Health Data into a structured weekly report: pain/mood scores, session adherence %, self-reported outcomes. This is the data bridge from patient app to HCP dashboard.',
+    chips: ['PHQ-9 weekly', 'Adherence %', 'Session count', 'Outcome trend']
+  },
+  'hcp-review': {
+    title: 'HCP Review', color: 'var(--hcp)',
+    body: 'Doctor reviews PGHD report — ideally before or during the follow-up appointment. Interprets clinical meaning, identifies worsening trends, notes adherence drop-off.',
+    chips: ['Follow-up appt', 'PVS report', 'KIM message', 'Clinical note']
+  },
+  decision: {
+    title: 'Clinical Decision', color: 'var(--hcp)',
+    body: 'Renew DiGA for another 90-day cycle, escalate to in-person therapy, adjust medication, or discharge. Decision documented in PVS. This is the most consequential node — and the least digitally connected.',
+    chips: ['Renew DiGA', 'Escalate', 'Adjust Rx', 'Discharge']
+  },
+  retrigger: {
+    title: 'Loop Re-entry ⚠', color: 'var(--gap)',
+    body: 'The HCP decision should feed back into the patient\'s app — adjusting programme intensity, triggering a personalised message, or confirming renewal. Currently this pathway does not exist in any standardised form across DiGA manufacturers.',
+    chips: ['No standard', 'Manual only', 'ePA gap', 'PVS not connected']
+  }
+};
+
+function selectNode(id) {
+  const d = NODE_DETAILS[id];
+  if (!d) return;
+  const area = document.getElementById('detail-area');
+  area.innerHTML = `
+    <div class="detail-box" style="border-color:${d.color};margin-bottom:10px">
+      <div class="detail-box-title" style="color:${d.color}">${d.title}</div>
+      <div class="detail-box-body">${d.body}</div>
+      <div class="detail-chips">${d.chips.map(c=>`<span class="dchip">${c}</span>`).join('')}</div>
+    </div>`;
+
+  // switch to nodes panel
+  setPanelView('nodes', document.querySelector('.vtb'));
+}
+
+function setPanelView(v, btn) {
+  document.querySelectorAll('.vtb').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  else document.querySelectorAll('.vtb')[['nodes','gap','design'].indexOf(v)].classList.add('active');
+  document.getElementById('panel-nodes').style.display = v === 'nodes' ? 'block' : 'none';
+  document.getElementById('panel-gap').style.display = v === 'gap' ? 'block' : 'none';
+  document.getElementById('panel-design').style.display = v === 'design' ? 'block' : 'none';
+}
+</script>
+</body>
+</html>
