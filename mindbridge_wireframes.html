@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindBridge — Lo-Fi Wireframes · Patient Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #f0eee9;
+  --board:   #e8e6e0;
+  --border:  #c4c0b8;
+  --ink:     #1e1c18;
+  --mid:     #6a6660;
+  --muted:   #aaa89f;
+  --screen:  #ffffff;
+
+  /* wireframe greys */
+  --g1:  #f5f5f5;   /* lightest fill */
+  --g2:  #e8e8e8;
+  --g3:  #d4d4d4;
+  --g4:  #bcbcbc;
+  --g5:  #a0a0a0;
+  --g6:  #888888;   /* darkest element */
+
+  --red-ann: #c0404a;  /* annotation only */
+  --blue-ann:#3a60a0;
+
+  --mono: 'Space Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.wf-header {
+  background: var(--ink);
+  padding: 16px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.wf-title {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: #c8c4bc;
+  letter-spacing: 0.3px;
+}
+.wf-title span { color: #707870; margin: 0 8px; }
+.wf-meta { font-family: var(--mono); font-size: 0.62rem; color: #6a6860; }
+.fidelity-badge {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #a0a89a;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  padding: 3px 10px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ── SCREEN NAV ── */
+.screen-nav {
+  background: var(--board);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 32px;
+  display: flex; align-items: center; gap: 6px;
+  overflow-x: auto;
+}
+.snav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  cursor: pointer; flex-shrink: 0;
+  padding: 6px 8px; border-radius: 4px;
+  transition: background 0.14s;
+  border: 1px solid transparent;
+}
+.snav-item:hover { background: rgba(30,28,24,0.06); }
+.snav-item.active {
+  background: rgba(30,28,24,0.08);
+  border-color: var(--border);
+}
+.snav-thumb {
+  width: 36px; height: 60px;
+  background: var(--screen);
+  border: 1.5px solid var(--g4);
+  border-radius: 4px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  padding: 4px 3px;
+  gap: 2px;
+  overflow: hidden;
+}
+.snav-thumb-bar {
+  width: 100%; height: 4px;
+  background: var(--g3); border-radius: 1px;
+}
+.snav-thumb-bar.dark { background: var(--g5); }
+.snav-thumb-circle {
+  width: 14px; height: 14px;
+  background: var(--g3); border-radius: 50%;
+  margin: 2px auto;
+}
+.snav-num {
+  font-family: var(--mono); font-size: 0.58rem;
+  color: var(--muted);
+}
+.snav-label {
+  font-size: 0.62rem; color: var(--mid);
+  white-space: nowrap; text-align: center;
+}
+.snav-item.active .snav-label { color: var(--ink); font-weight: 500; }
+.snav-sep {
+  width: 1px; height: 40px; background: var(--border);
+  margin: 0 4px; flex-shrink: 0;
+}
+
+/* ── BOARD ── */
+.board {
+  padding: 40px 32px 60px;
+  display: flex; flex-direction: column; gap: 48px;
+}
+
+/* ── SCREEN SECTION ── */
+.screen-section { display: none; }
+.screen-section.active { display: flex; gap: 48px; align-items: flex-start; }
+
+/* phone frame */
+.phone-frame {
+  flex-shrink: 0;
+  position: relative;
+}
+.phone-outer {
+  width: 280px;
+  background: var(--g4);
+  border-radius: 36px;
+  padding: 10px;
+  box-shadow:
+    0 0 0 1px var(--g5),
+    0 8px 32px rgba(30,28,24,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.phone-notch {
+  width: 80px; height: 20px;
+  background: var(--g4);
+  border-radius: 0 0 12px 12px;
+  margin: 0 auto 6px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+}
+.notch-cam { width: 8px; height: 8px; background: var(--g5); border-radius: 50%; }
+.notch-speaker { width: 28px; height: 4px; background: var(--g5); border-radius: 2px; }
+.phone-screen {
+  background: var(--screen);
+  border-radius: 26px;
+  min-height: 500px;
+  overflow: hidden;
+  position: relative;
+}
+.phone-home-ind {
+  width: 80px; height: 4px;
+  background: var(--g5); border-radius: 2px;
+  margin: 8px auto 0;
+}
+
+/* status bar */
+.status-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px 4px;
+  font-family: var(--mono); font-size: 0.58rem; color: var(--g5);
+}
+.status-icons { display: flex; gap: 4px; align-items: center; }
+.status-icon { width: 14px; height: 8px; background: var(--g4); border-radius: 1px; }
+.status-icon.signal { width: 10px; }
+.status-icon.wifi { width: 10px; }
+
+/* screen content primitives */
+.wf-screen-body { padding: 12px 16px; }
+
+/* boxes */
+.wf-box {
+  background: var(--g2);
+  border: 1.5px solid var(--g4);
+  border-radius: 6px;
+}
+.wf-box.dark { background: var(--g4); border-color: var(--g5); }
+.wf-box.darker { background: var(--g5); border-color: var(--g6); }
+.wf-box.light { background: var(--g1); border-color: var(--g3); }
+
+/* text placeholders */
+.wf-text-lg {
+  height: 20px; background: var(--g4); border-radius: 3px;
+  margin-bottom: 8px;
+}
+.wf-text-md {
+  height: 12px; background: var(--g3); border-radius: 2px;
+  margin-bottom: 6px;
+}
+.wf-text-sm {
+  height: 9px; background: var(--g2); border-radius: 2px;
+  margin-bottom: 4px;
+}
+.wf-text-sm.w80 { width: 80%; }
+.wf-text-sm.w60 { width: 60%; }
+.wf-text-sm.w70 { width: 70%; }
+.wf-text-sm.center { margin-left: auto; margin-right: auto; }
+
+/* image placeholder */
+.wf-img {
+  background: var(--g2);
+  border: 1.5px dashed var(--g4);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.wf-img-label {
+  font-family: var(--mono); font-size: 0.55rem; color: var(--g5);
+  text-align: center; line-height: 1.4;
+}
+
+/* icon placeholder */
+.wf-icon {
+  background: var(--g3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.wf-icon-sq { border-radius: 8px; }
+
+/* input field */
+.wf-input {
+  background: var(--g1);
+  border: 1.5px solid var(--g4);
+  border-radius: 6px;
+  height: 36px;
+  display: flex; align-items: center;
+  padding: 0 10px;
+  margin-bottom: 10px;
+}
+.wf-input-label {
+  height: 8px; background: var(--g3); border-radius: 2px;
+  width: 50%;
+}
+.wf-input-cursor {
+  width: 1.5px; height: 14px;
+  background: var(--g5); margin-left: 6px;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+/* button */
+.wf-btn {
+  height: 44px;
+  background: var(--g5);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+}
+.wf-btn-label {
+  height: 10px; background: var(--g3); border-radius: 2px; width: 60%;
+}
+.wf-btn.ghost {
+  background: transparent;
+  border: 1.5px solid var(--g4);
+}
+.wf-btn.ghost .wf-btn-label { background: var(--g4); }
+.wf-btn.sm { height: 34px; }
+
+/* progress bar */
+.wf-progress {
+  height: 4px; background: var(--g2); border-radius: 2px;
+  overflow: hidden; margin-bottom: 16px;
+}
+.wf-progress-fill {
+  height: 100%; background: var(--g5); border-radius: 2px;
+}
+
+/* checkbox row */
+.wf-check-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin-bottom: 10px;
+}
+.wf-checkbox {
+  width: 16px; height: 16px; flex-shrink: 0;
+  background: var(--g1); border: 1.5px solid var(--g4);
+  border-radius: 3px; margin-top: 1px;
+}
+.wf-checkbox.checked { background: var(--g5); border-color: var(--g6); }
+.wf-check-text { flex: 1; }
+
+/* radio option */
+.wf-radio-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--g1); border: 1.5px solid var(--g3);
+  border-radius: 8px; padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.wf-radio-row.selected { background: var(--g3); border-color: var(--g5); }
+.wf-radio { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; background: var(--g2); border: 1.5px solid var(--g4); }
+.wf-radio.selected { background: var(--g5); border-color: var(--g6); }
+.wf-radio-text { flex: 1; }
+
+/* slider */
+.wf-slider-track {
+  height: 4px; background: var(--g3); border-radius: 2px;
+  position: relative; margin: 12px 0;
+}
+.wf-slider-fill { height: 100%; background: var(--g5); border-radius: 2px; }
+.wf-slider-thumb {
+  width: 18px; height: 18px;
+  background: var(--screen); border: 2px solid var(--g5);
+  border-radius: 50%;
+  position: absolute; top: 50%; transform: translateY(-50%);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.wf-slider-labels {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 0.55rem; color: var(--g5);
+}
+
+/* tabs */
+.wf-tabs {
+  display: flex; border-bottom: 1.5px solid var(--g3); margin-bottom: 12px;
+}
+.wf-tab {
+  flex: 1; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+}
+.wf-tab-bar { height: 9px; background: var(--g3); border-radius: 2px; width: 60%; }
+.wf-tab.active { border-bottom: 2px solid var(--g6); }
+.wf-tab.active .wf-tab-bar { background: var(--g6); }
+
+/* list item */
+.wf-list-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--g2);
+}
+.wf-list-item:last-child { border-bottom: none; }
+
+/* divider */
+.wf-divider { height: 1px; background: var(--g2); margin: 10px 0; }
+
+/* section header in screen */
+.wf-section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+
+/* step dots */
+.step-dots {
+  display: flex; gap: 5px; justify-content: center;
+  margin-bottom: 12px;
+}
+.step-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--g3);
+}
+.step-dot.active { background: var(--g5); width: 18px; border-radius: 4px; }
+
+/* ── ANNOTATION PANEL ── */
+.annotation-panel {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.ann-screen-title {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 10px;
+}
+.ann-screen-num {
+  width: 24px; height: 24px;
+  background: var(--ink); color: #e8e4dc;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 700;
+  flex-shrink: 0;
+}
+.ann-screen-sub {
+  font-size: 0.72rem; color: var(--mid); margin-bottom: 16px; line-height: 1.5;
+}
+.ann-card {
+  background: #fdfcfa;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.ann-card-title {
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.ann-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 5px 0; border-bottom: 1px solid rgba(196,192,184,0.4);
+  font-size: 0.73rem; color: var(--mid); line-height: 1.5;
+}
+.ann-item:last-child { border-bottom: none; }
+.ann-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 6px;
+}
+.ann-dot.note { background: var(--blue-ann); }
+.ann-dot.warn { background: var(--red-ann); }
+.ann-dot.ok { background: #4a8a5a; }
+
+.component-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.ctag {
+  font-family: var(--mono); font-size: 0.58rem;
+  padding: 2px 7px; border-radius: 2px;
+  background: rgba(30,28,24,0.05);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* ── ALL SCREENS VIEW ── */
+.all-screens-view { display: none; }
+.all-screens-view.active {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  padding: 40px 32px 60px;
+}
+.mini-screen-wrap { cursor: pointer; }
+.mini-screen-wrap:hover .phone-outer { box-shadow: 0 0 0 2px var(--g6), 0 8px 32px rgba(30,28,24,0.14); }
+.mini-screen-wrap .phone-outer { transform: scale(0.72); transform-origin: top center; }
+.mini-label {
+  text-align: center; margin-top: -28px;
+  font-family: var(--mono); font-size: 0.62rem; color: var(--mid);
+}
+.mini-num { font-weight: 700; color: var(--ink); }
+
+/* ── TOPNAV ── */
+.board-nav {
+  background: var(--board);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex; align-items: center; gap: 0;
+}
+.bnav-tab {
+  padding: 11px 18px;
+  font-size: 0.72rem; font-weight: 500;
+  color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: all 0.14s;
+  font-family: var(--sans);
+}
+.bnav-tab:hover { color: var(--ink); }
+.bnav-tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .screen-section.active { flex-direction: column; }
+  .all-screens-view.active { grid-template-columns: repeat(2,1fr); }
+  .board { padding: 24px 16px 40px; }
+  .wf-header { padding: 12px 16px; }
+  .screen-nav { padding: 8px 16px; }
+  .board-nav { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="wf-header">
+  <div class="wf-title">
+    MindBridge <span>/</span> Patient Onboarding <span>/</span> Lo-Fi Wireframes
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="wf-meta">8 screens · v1.0 · June 2026</div>
+    <div class="fidelity-badge">Low Fidelity</div>
+  </div>
+</header>
+
+<!-- BOARD NAV -->
+<div class="board-nav">
+  <div class="bnav-tab active" onclick="setBoardView('single',this)">Screen View</div>
+  <div class="bnav-tab" onclick="setBoardView('all',this)">All Screens</div>
+</div>
+
+<!-- SCREEN NAV -->
+<div class="screen-nav" id="screen-nav-bar">
+  <div class="snav-item active" onclick="goToScreen(0,this)">
+    <div class="snav-thumb">
+      <div class="snav-thumb-bar dark"></div>
+      <div class="snav-thumb-circle"></div>
+      <div class="snav-thumb-bar"></div>
+      <div class="snav-thumb-bar"></div>
+    </div>
+    <div class="snav-num">01</div>
+    <div class="snav-label">Welcome</div>
+  </div>
+  <div class="snav-item" onclick="goToScreen(1,this)">
+    <div class="snav-thumb">
+      <div class="snav-thumb-bar dark"></div>
+      <div class="snav-thumb-bar" style="width:60%;margin:4px auto"></div>
+      <div class="snav-thumb-bar"></div>
+      <div class="snav-thumb-bar" style="height:16px;background:#d4d4d4;border-radius:3px;margin-top:2px"></div>
+    </div>
+    <div class="snav-num">02</div>
+    <div class="snav-label">Code Entry</div>
+  </div>
+  <div class="snav-item" onclick="goToScreen(2,this)">
+    <div class="snav-thumb">
+      <div class="snav-thumb-bar"></div>
+      <div class="snav-thumb-bar" style="width:70%;"></div>
+      <div class="snav-thumb-bar" style="height:10px;background:#d4d4d4;margin-top:2px"></div>
+      <div class="snav-thumb-bar" style="height:10px;background:#d4d4d4;margin-top:2px"></div>
+    </div>
+    <div class="snav-num">03</div>
+    <div class="snav-label">Account</div>
+  </div>
+  <div class="snav-item" onclick="goToScreen(3,this)">
+    <div class="snav-thumb">
+      <div class="snav-thumb-bar"></div>
+      <div class="snav-thumb-bar" style="width:80%"></div>
+      <div style="display:flex;gap:2px;margin-top:3px">
+        <div class="snav-thumb-bar" style="flex:1;height:6px;background:#bcbcbc"></div>
+        <div class="snav-thumb-bar" style="flex:1;height:6px;background:#bcbcbc"></div>
+      </div>
+      <div class="snav-thumb-bar" style="height:10px;background:#bcbcbc;margin-top:3px"></div>
+    </div>
+    <div class="snav-num">04</div>
+    <div class="snav-label">Consent</div>
+  </div>
+  <div class="snav-item" onclick="goToScreen(4,this)">
+    <div class="snav-thumb">
+      <div class="snav-thumb-bar"></div>
+      <div class="snav-thumb-bar" style="width:60%"></div>
+      <div class="snav-thumb-bar" style="height:8px;background:#d4d4d4;margin-top:3px"></div>
+      <div class="snav-thumb-bar" style="height:8px;background:#d4d4d4;margin-top:2px"></div>
+      <div class="snav-thumb-bar" style="height:8px;background:#d4d4d4;margin-top:2px"></div>
+    </div>
+    <div class="snav-num">05</div>
+    <div class="snav-label">Intake (1)</div>
+  </div>
+  <div class="snav-item" onclick="goToScreen(5,this)">
+    <div class="snav-thumb">
+      <div class="snav-thumb-bar"></div>
+      <div class="snav-thumb-bar" style="width:60%"></div>
+      <div class="snav-thumb-bar" style="height:6px;margin-top:4px"></div>
+      <div class="snav-thumb-bar" style="height:18px;background:#bcbcbc;border-radius:2px;margin-top:2px"></div>
+    </div>
+    <div class="snav-num">06</div>
+    <div class="snav-label">Intake (2)</div>
+  </div>
+  <div class="snav-item" onclick="goToScreen(6,this)">
+    <div class="snav-thumb">
+      <div class="snav-thumb-bar dark"></div>
+      <div class="snav-thumb-circle" style="width:20px;height:20px;margin:3px auto"></div>
+      <div class="snav-thumb-bar" style="width:70%;margin:2px auto"></div>
+      <div class="snav-thumb-bar" style="height:10px;background:#bcbcbc;margin-top:2px"></div>
+    </div>
+    <div class="snav-num">07</div>
+    <div class="snav-label">Programme</div>
+  </div>
+  <div class="snav-item" onclick="goToScreen(7,this)">
+    <div class="snav-thumb">
+      <div class="snav-thumb-bar dark"></div>
+      <div class="snav-thumb-circle" style="background:#a0a0a0;margin:4px auto"></div>
+      <div class="snav-thumb-bar" style="height:10px;background:#bcbcbc;margin-top:2px"></div>
+    </div>
+    <div class="snav-num">08</div>
+    <div class="snav-label">Ready</div>
+  </div>
+</div>
+
+<!-- BOARD: SINGLE SCREEN VIEW -->
+<div class="board" id="board-single">
+
+  <!-- ── SCREEN 1: WELCOME ── -->
+  <div class="screen-section active" id="screen-0">
+    <div class="phone-frame">
+      <div class="phone-outer">
+        <div class="phone-notch">
+          <div class="notch-cam"></div>
+          <div class="notch-speaker"></div>
+        </div>
+        <div class="phone-screen">
+          <div class="status-bar">
+            <div>9:41</div>
+            <div class="status-icons">
+              <div class="status-icon signal"></div>
+              <div class="status-icon wifi"></div>
+              <div class="status-icon"></div>
+            </div>
+          </div>
+
+          <!-- hero image placeholder -->
+          <div class="wf-img" style="height:200px;margin:0;border-radius:0;border:none;border-bottom:1.5px dashed var(--g4)">
+            <div class="wf-img-label">ILLUSTRATION<br>[calm / abstract]<br>360 × 200</div>
+          </div>
+
+          <div class="wf-screen-body">
+            <!-- Logo -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;margin-top:4px;">
+              <div class="wf-icon" style="width:28px;height:28px;"></div>
+              <div class="wf-text-md" style="width:80px;margin:0"></div>
+            </div>
+
+            <!-- heading -->
+            <div class="wf-text-lg" style="width:90%"></div>
+            <div class="wf-text-lg" style="width:65%"></div>
+
+            <!-- sub -->
+            <div style="margin-top:8px;margin-bottom:20px;">
+              <div class="wf-text-sm"></div>
+              <div class="wf-text-sm w80"></div>
+              <div class="wf-text-sm w60"></div>
+            </div>
+
+            <!-- CTA -->
+            <div class="wf-btn"></div>
+            <div class="wf-btn ghost"></div>
+
+            <!-- language -->
+            <div style="display:flex;justify-content:center;margin-top:10px;">
+              <div class="wf-text-sm w60 center"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home-ind"></div>
+      </div>
+    </div>
+
+    <div class="annotation-panel">
+      <div>
+        <div class="ann-screen-title"><div class="ann-screen-num">1</div>Welcome Screen</div>
+        <div class="ann-screen-sub">First impression. Patient has downloaded the app after receiving their Freischaltcode. Goal: communicate what MindBridge is and why it's worth setting up — in under 10 seconds.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Layout Notes</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Hero illustration fills top ~40% of screen — no text, reduces cognitive load on first open</div>
+        <div class="ann-item"><div class="ann-dot note"></div>App logo + name below image — establishes brand before asking for anything</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Two CTAs: primary "Get started" + ghost "I already have an account" — handles both new and returning users</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Language switcher visible before any action — critical for multilingual patient base (Turkish, Arabic, Russian in Germany)</div>
+        <div class="ann-item"><div class="ann-dot note"></div>No login wall on first open — patient should see value before being asked to create an account</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Design Decisions</div>
+        <div class="ann-item"><div class="ann-dot ok"></div>Illustration style TBD — must be calm, non-clinical, culturally neutral</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Avoid medical imagery (brain scans, pills, hospital) — stigma risk in mental health context</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Heading copy placeholder: "Your mental health programme, prescribed for you" — to be validated with patients</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Components</div>
+        <div class="component-tags">
+          <span class="ctag">HERO_IMAGE</span>
+          <span class="ctag">APP_LOGO</span>
+          <span class="ctag">HEADING_XL</span>
+          <span class="ctag">BODY_TEXT</span>
+          <span class="ctag">BTN_PRIMARY</span>
+          <span class="ctag">BTN_GHOST</span>
+          <span class="ctag">LANG_SWITCHER</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 2: CODE ENTRY ── -->
+  <div class="screen-section" id="screen-1">
+    <div class="phone-frame">
+      <div class="phone-outer">
+        <div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div>
+        <div class="phone-screen">
+          <div class="status-bar"><div>9:41</div><div class="status-icons"><div class="status-icon signal"></div><div class="status-icon wifi"></div><div class="status-icon"></div></div></div>
+          <div class="wf-screen-body">
+            <!-- progress -->
+            <div class="wf-progress"><div class="wf-progress-fill" style="width:12%"></div></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
+              <div class="wf-text-sm" style="width:30%;margin:0"></div>
+              <div class="wf-text-sm" style="width:15%;margin:0"></div>
+            </div>
+
+            <!-- heading -->
+            <div class="wf-text-lg" style="width:85%"></div>
+            <div class="wf-text-lg" style="width:55%"></div>
+            <div style="margin:8px 0 20px;">
+              <div class="wf-text-sm"></div>
+              <div class="wf-text-sm w70"></div>
+            </div>
+
+            <!-- code input — 4 groups of 4 -->
+            <div style="display:flex;gap:8px;justify-content:center;margin-bottom:6px;">
+              <div class="wf-box" style="flex:1;height:44px;display:flex;align-items:center;justify-content:center;">
+                <div style="display:flex;gap:4px;">
+                  <div style="width:8px;height:16px;background:var(--g5);border-radius:1px;"></div>
+                  <div style="width:8px;height:16px;background:var(--g5);border-radius:1px;"></div>
+                  <div style="width:8px;height:16px;background:var(--g5);border-radius:1px;"></div>
+                  <div style="width:8px;height:16px;background:var(--g5);border-radius:1px;"></div>
+                </div>
+              </div>
+              <div class="wf-text-sm" style="width:6px;margin:auto 0;background:var(--g4)"></div>
+              <div class="wf-box light" style="flex:1;height:44px;display:flex;align-items:center;justify-content:center;">
+                <div class="wf-input-cursor"></div>
+              </div>
+              <div class="wf-text-sm" style="width:6px;margin:auto 0;background:var(--g4)"></div>
+              <div class="wf-box light" style="flex:1;height:44px;"></div>
+              <div class="wf-text-sm" style="width:6px;margin:auto 0;background:var(--g4)"></div>
+              <div class="wf-box light" style="flex:1;height:44px;"></div>
+            </div>
+
+            <!-- help text -->
+            <div style="background:var(--g1);border-radius:6px;padding:8px;margin-bottom:16px;border:1px solid var(--g3);">
+              <div class="wf-text-sm"></div>
+              <div class="wf-text-sm w80"></div>
+            </div>
+
+            <!-- error state placeholder -->
+            <div style="background:var(--g2);border-radius:6px;padding:8px;margin-bottom:16px;border:1.5px dashed var(--g4);">
+              <div class="wf-text-sm" style="width:40%;background:var(--g4)"></div>
+              <div class="wf-text-sm w70"></div>
+            </div>
+
+            <div class="wf-btn"></div>
+            <div style="text-align:center;margin-top:8px;">
+              <div class="wf-text-sm w60 center"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home-ind"></div>
+      </div>
+    </div>
+
+    <div class="annotation-panel">
+      <div>
+        <div class="ann-screen-title"><div class="ann-screen-num">2</div>Freischaltcode Entry</div>
+        <div class="ann-screen-sub">Highest drop-off screen. Patient must manually enter a 16-character code they received from their doctor — often on paper. Every friction point here costs an activation.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Layout Notes</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Progress bar at top — 1/8 steps. Patient needs to see this is a short process</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Code input split into 4 groups of 4 — matches how codes are printed on paper. Auto-advance between groups.</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Help tooltip: "Where is my code?" — opens a visual guide showing the paper format</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Error state placeholder visible in wireframe — must be designed before development (E1: invalid, E2: expired)</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Camera/scan option for code (future enhancement) — not in v1 but reserve layout space</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Critical UX Rules</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Auto-capitalise + strip spaces — codes are case-insensitive but often have formatting inconsistencies</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Numeric keyboard if code is numeric — do not default to QWERTY</div>
+        <div class="ann-item"><div class="ann-dot ok"></div>Show remaining character count per group</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>After 3 failed attempts → show KK helpline number prominently</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Components</div>
+        <div class="component-tags">
+          <span class="ctag">PROGRESS_BAR</span>
+          <span class="ctag">CODE_INPUT_GROUP</span>
+          <span class="ctag">HELP_TOOLTIP</span>
+          <span class="ctag">ERROR_INLINE</span>
+          <span class="ctag">BTN_PRIMARY</span>
+          <span class="ctag">LINK_TEXT</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 3: ACCOUNT CREATION ── -->
+  <div class="screen-section" id="screen-2">
+    <div class="phone-frame">
+      <div class="phone-outer">
+        <div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div>
+        <div class="phone-screen">
+          <div class="status-bar"><div>9:41</div><div class="status-icons"><div class="status-icon signal"></div><div class="status-icon wifi"></div><div class="status-icon"></div></div></div>
+          <div class="wf-screen-body">
+            <div class="wf-progress"><div class="wf-progress-fill" style="width:25%"></div></div>
+            <div style="margin-bottom:16px;"><div class="wf-text-sm" style="width:25%;margin-bottom:6px;"></div></div>
+            <div class="wf-text-lg" style="width:80%"></div>
+            <div style="margin:6px 0 20px;"><div class="wf-text-sm"></div><div class="wf-text-sm w70"></div></div>
+
+            <!-- SSO option -->
+            <div class="wf-box" style="height:44px;display:flex;align-items:center;padding:0 12px;gap:10px;margin-bottom:10px;">
+              <div class="wf-icon wf-icon-sq" style="width:22px;height:22px;flex-shrink:0;background:var(--g4)"></div>
+              <div class="wf-text-md" style="flex:1;margin:0"></div>
+            </div>
+
+            <!-- divider OR -->
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+              <div class="wf-divider" style="flex:1;margin:0"></div>
+              <div class="wf-text-sm" style="width:20px;background:var(--g3);margin:0"></div>
+              <div class="wf-divider" style="flex:1;margin:0"></div>
+            </div>
+
+            <!-- email + password -->
+            <div class="wf-input"><div class="wf-input-label"></div></div>
+            <div class="wf-input"><div class="wf-input-label" style="width:35%"></div></div>
+            <div class="wf-input"><div class="wf-input-label" style="width:45%"></div></div>
+
+            <!-- password strength -->
+            <div style="display:flex;gap:3px;margin-bottom:12px;">
+              <div style="flex:1;height:3px;background:var(--g5);border-radius:1px;"></div>
+              <div style="flex:1;height:3px;background:var(--g5);border-radius:1px;"></div>
+              <div style="flex:1;height:3px;background:var(--g3);border-radius:1px;"></div>
+              <div style="flex:1;height:3px;background:var(--g3);border-radius:1px;"></div>
+            </div>
+
+            <div class="wf-btn"></div>
+          </div>
+        </div>
+        <div class="phone-home-ind"></div>
+      </div>
+    </div>
+
+    <div class="annotation-panel">
+      <div>
+        <div class="ann-screen-title"><div class="ann-screen-num">3</div>Account Creation</div>
+        <div class="ann-screen-sub">Patient creates their MindBridge account. SSO via Krankenkasse login reduces friction and pre-populates patient data where available.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Layout Notes</div>
+        <div class="ann-item"><div class="ann-dot note"></div>KK SSO button at top — primary path. Most patients have a GKV app login already</div>
+        <div class="ann-item"><div class="ann-dot note"></div>"Or" divider before email/password — secondary path for patients without KK app</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Password strength indicator — 4-segment bar, real-time feedback</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Fields: Email · Password · Confirm password — keep minimal. Name collected in intake survey.</div>
+        <div class="ann-item"><div class="ann-dot ok"></div>Returning user path: "I already have an account" → login screen (no re-entry of code required)</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Components</div>
+        <div class="component-tags">
+          <span class="ctag">SSO_BUTTON</span>
+          <span class="ctag">DIVIDER_OR</span>
+          <span class="ctag">INPUT_EMAIL</span>
+          <span class="ctag">INPUT_PASSWORD</span>
+          <span class="ctag">PASSWORD_STRENGTH</span>
+          <span class="ctag">BTN_PRIMARY</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 4: CONSENT ── -->
+  <div class="screen-section" id="screen-3">
+    <div class="phone-frame">
+      <div class="phone-outer">
+        <div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div>
+        <div class="phone-screen">
+          <div class="status-bar"><div>9:41</div><div class="status-icons"><div class="status-icon signal"></div><div class="status-icon wifi"></div><div class="status-icon"></div></div></div>
+          <div class="wf-screen-body">
+            <div class="wf-progress"><div class="wf-progress-fill" style="width:37%"></div></div>
+            <div class="wf-text-lg" style="width:85%;margin-top:8px"></div>
+            <div style="margin:6px 0 16px;"><div class="wf-text-sm"></div><div class="wf-text-sm w80"></div></div>
+
+            <!-- mandatory section -->
+            <div style="font-family:var(--mono);font-size:0.58rem;color:var(--g5);margin-bottom:6px;letter-spacing:1px;">REQUIRED</div>
+            <div class="wf-check-row">
+              <div class="wf-checkbox checked"></div>
+              <div class="wf-check-text"><div class="wf-text-sm"></div><div class="wf-text-sm w80"></div></div>
+            </div>
+            <div class="wf-check-row">
+              <div class="wf-checkbox checked"></div>
+              <div class="wf-check-text"><div class="wf-text-sm"></div><div class="wf-text-sm w70"></div></div>
+            </div>
+
+            <div class="wf-divider"></div>
+
+            <!-- optional section -->
+            <div style="font-family:var(--mono);font-size:0.58rem;color:var(--g5);margin-bottom:6px;letter-spacing:1px;">OPTIONAL</div>
+            <div class="wf-check-row">
+              <div class="wf-checkbox"></div>
+              <div class="wf-check-text"><div class="wf-text-sm"></div><div class="wf-text-sm w80"></div></div>
+            </div>
+            <div class="wf-check-row">
+              <div class="wf-checkbox"></div>
+              <div class="wf-check-text"><div class="wf-text-sm"></div><div class="wf-text-sm w60"></div></div>
+            </div>
+            <div class="wf-check-row">
+              <div class="wf-checkbox"></div>
+              <div class="wf-check-text"><div class="wf-text-sm"></div><div class="wf-text-sm w70"></div></div>
+            </div>
+
+            <div style="background:var(--g1);border-radius:6px;padding:8px;margin-bottom:12px;border:1px solid var(--g3);">
+              <div class="wf-text-sm w80"></div>
+              <div class="wf-text-sm w60"></div>
+            </div>
+
+            <div class="wf-btn"></div>
+          </div>
+        </div>
+        <div class="phone-home-ind"></div>
+      </div>
+    </div>
+
+    <div class="annotation-panel">
+      <div>
+        <div class="ann-screen-title"><div class="ann-screen-num">4</div>DSGVO Consent</div>
+        <div class="ann-screen-sub">Mandatory under GDPR/DSGVO and BfArM DiGA certification. The single most common cause of unnecessary onboarding abandonment — when mandatory and optional consents are visually indistinguishable.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Layout Notes</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>REQUIRED and OPTIONAL sections visually separated — critical distinction, not just a label</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Required items pre-checked — patient must actively uncheck to refuse (legally valid, reduces friction)</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Optional items unchecked by default — ePA sync, analytics, research participation</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Plain-language summary box below each consent — not just legal text. Tested with B1-level German speakers.</div>
+        <div class="ann-item"><div class="ann-dot ok"></div>CTA button: "Continue" not "I agree to all" — framing matters in mental health context</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Error State — Mandatory Refused</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>If patient unchecks a required item → inline explanation appears: "This is required to use MindBridge. Here's why:"</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Never say "You cannot proceed" — reframe as informational</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Components</div>
+        <div class="component-tags">
+          <span class="ctag">SECTION_LABEL</span>
+          <span class="ctag">CHECKBOX_REQUIRED</span>
+          <span class="ctag">CHECKBOX_OPTIONAL</span>
+          <span class="ctag">CONSENT_SUMMARY</span>
+          <span class="ctag">ERROR_INLINE</span>
+          <span class="ctag">BTN_PRIMARY</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 5: INTAKE 1 ── -->
+  <div class="screen-section" id="screen-4">
+    <div class="phone-frame">
+      <div class="phone-outer">
+        <div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div>
+        <div class="phone-screen">
+          <div class="status-bar"><div>9:41</div><div class="status-icons"><div class="status-icon signal"></div><div class="status-icon wifi"></div><div class="status-icon"></div></div></div>
+          <div class="wf-screen-body">
+            <div class="wf-progress"><div class="wf-progress-fill" style="width:50%"></div></div>
+            <div class="step-dots">
+              <div class="step-dot"></div><div class="step-dot"></div>
+              <div class="step-dot active"></div>
+              <div class="step-dot"></div><div class="step-dot"></div>
+            </div>
+            <div class="wf-text-lg" style="width:90%"></div>
+            <div style="margin:6px 0 16px;"><div class="wf-text-sm w70"></div></div>
+
+            <!-- radio options -->
+            <div class="wf-radio-row selected"><div class="wf-radio selected"></div><div class="wf-radio-text"><div class="wf-text-sm" style="width:60%;"></div></div></div>
+            <div class="wf-radio-row"><div class="wf-radio"></div><div class="wf-radio-text"><div class="wf-text-sm" style="width:50%;"></div></div></div>
+            <div class="wf-radio-row"><div class="wf-radio"></div><div class="wf-radio-text"><div class="wf-text-sm" style="width:70%;"></div></div></div>
+            <div class="wf-radio-row"><div class="wf-radio"></div><div class="wf-radio-text"><div class="wf-text-sm" style="width:45%;"></div></div></div>
+
+            <div class="wf-divider" style="margin:12px 0"></div>
+
+            <!-- skip option -->
+            <div style="text-align:center;margin-bottom:10px;">
+              <div class="wf-text-sm w60 center"></div>
+            </div>
+
+            <div style="display:flex;gap:8px;">
+              <div class="wf-btn ghost" style="flex:1"></div>
+              <div class="wf-btn" style="flex:2"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home-ind"></div>
+      </div>
+    </div>
+
+    <div class="annotation-panel">
+      <div>
+        <div class="ann-screen-title"><div class="ann-screen-num">5</div>Health Intake — Part 1</div>
+        <div class="ann-screen-sub">First intake screen — one question per screen pattern. Reduces abandonment vs long-form surveys. This screen captures primary diagnosis / condition type.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Layout Notes</div>
+        <div class="ann-item"><div class="ann-dot note"></div>One question per screen — reduces overwhelm. Progress dots show position within intake section.</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Radio button options — tap to select, visual feedback (filled + background highlight)</div>
+        <div class="ann-item"><div class="ann-dot ok"></div>Back + Continue navigation — patient can revise answers without restarting</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>"Skip this question" available for optional items — never block on optional data</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Question copy: plain language, not clinical. "How would you describe what you're experiencing?" not "Primary DSM-5 diagnosis"</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Components</div>
+        <div class="component-tags">
+          <span class="ctag">STEP_DOTS</span>
+          <span class="ctag">QUESTION_HEADING</span>
+          <span class="ctag">RADIO_OPTION</span>
+          <span class="ctag">SKIP_LINK</span>
+          <span class="ctag">BTN_BACK</span>
+          <span class="ctag">BTN_CONTINUE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 6: INTAKE 2 (SLIDER) ── -->
+  <div class="screen-section" id="screen-5">
+    <div class="phone-frame">
+      <div class="phone-outer">
+        <div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div>
+        <div class="phone-screen">
+          <div class="status-bar"><div>9:41</div><div class="status-icons"><div class="status-icon signal"></div><div class="status-icon wifi"></div><div class="status-icon"></div></div></div>
+          <div class="wf-screen-body">
+            <div class="wf-progress"><div class="wf-progress-fill" style="width:62%"></div></div>
+            <div class="step-dots">
+              <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
+              <div class="step-dot active"></div><div class="step-dot"></div>
+            </div>
+            <div class="wf-text-lg" style="width:95%"></div>
+            <div class="wf-text-lg" style="width:60%"></div>
+            <div style="margin:6px 0 24px;"><div class="wf-text-sm w70"></div></div>
+
+            <!-- Emoji scale -->
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <div class="wf-icon" style="width:32px;height:32px;background:var(--g3)"></div>
+              <div class="wf-icon" style="width:32px;height:32px;background:var(--g3)"></div>
+              <div class="wf-icon" style="width:32px;height:32px;background:var(--g3)"></div>
+              <div class="wf-icon" style="width:32px;height:32px;background:var(--g3)"></div>
+              <div class="wf-icon" style="width:32px;height:32px;background:var(--g4)"></div>
+            </div>
+
+            <!-- slider -->
+            <div class="wf-slider-track">
+              <div class="wf-slider-fill" style="width:70%"></div>
+              <div class="wf-slider-thumb" style="left:66%"></div>
+            </div>
+            <div class="wf-slider-labels">
+              <span>Not at all</span><span>Extremely</span>
+            </div>
+
+            <div class="wf-divider" style="margin:20px 0 12px"></div>
+
+            <!-- optional text -->
+            <div class="wf-text-sm" style="margin-bottom:6px;width:80%"></div>
+            <div class="wf-box light" style="height:64px;padding:8px;">
+              <div class="wf-text-sm w70"></div>
+              <div class="wf-text-sm w50"></div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <div class="wf-btn ghost" style="flex:1"></div>
+              <div class="wf-btn" style="flex:2"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home-ind"></div>
+      </div>
+    </div>
+
+    <div class="annotation-panel">
+      <div>
+        <div class="ann-screen-title"><div class="ann-screen-num">6</div>Health Intake — Symptom Severity</div>
+        <div class="ann-screen-sub">Captures current symptom severity using a visual slider + emoji scale. Used to calibrate programme intensity. Optional free-text for patient to describe in their own words.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Layout Notes</div>
+        <div class="ann-item"><div class="ann-dot note"></div>5-point emoji scale above slider — visual anchors reduce misinterpretation of scale direction</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Slider with thumb visible — shows current selection clearly. Haptic feedback on mobile.</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Text labels "Not at all" / "Extremely" must be validated for cultural translation — some languages invert scale expectations</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Optional free-text field below — "Tell us more in your own words (optional)". Max 200 chars.</div>
+        <div class="ann-item"><div class="ann-dot ok"></div>Emoji icons TBD — must be culturally neutral, avoid Western-specific facial expressions</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Components</div>
+        <div class="component-tags">
+          <span class="ctag">EMOJI_SCALE</span>
+          <span class="ctag">SLIDER_INPUT</span>
+          <span class="ctag">SLIDER_LABELS</span>
+          <span class="ctag">TEXTAREA_OPTIONAL</span>
+          <span class="ctag">BTN_BACK</span>
+          <span class="ctag">BTN_CONTINUE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 7: PROGRAMME PREVIEW ── -->
+  <div class="screen-section" id="screen-6">
+    <div class="phone-frame">
+      <div class="phone-outer">
+        <div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div>
+        <div class="phone-screen">
+          <div class="status-bar"><div>9:41</div><div class="status-icons"><div class="status-icon signal"></div><div class="status-icon wifi"></div><div class="status-icon"></div></div></div>
+          <div class="wf-screen-body">
+            <div class="wf-progress"><div class="wf-progress-fill" style="width:87%"></div></div>
+
+            <!-- programme card -->
+            <div class="wf-box dark" style="padding:14px;margin-bottom:14px;border-radius:10px;">
+              <div class="wf-icon" style="width:36px;height:36px;margin:0 auto 8px;background:var(--g5)"></div>
+              <div class="wf-text-md" style="width:70%;margin:0 auto 6px"></div>
+              <div class="wf-text-sm w60 center" style="margin-bottom:8px"></div>
+              <div style="display:flex;gap:6px;justify-content:center;">
+                <div class="wf-box" style="padding:4px 10px;border-radius:20px;"><div class="wf-text-sm" style="width:50px;margin:0"></div></div>
+                <div class="wf-box" style="padding:4px 10px;border-radius:20px;"><div class="wf-text-sm" style="width:40px;margin:0"></div></div>
+                <div class="wf-box" style="padding:4px 10px;border-radius:20px;"><div class="wf-text-sm" style="width:40px;margin:0"></div></div>
+              </div>
+            </div>
+
+            <!-- what's included -->
+            <div style="font-family:var(--mono);font-size:0.58rem;color:var(--g5);margin-bottom:8px;letter-spacing:1px;">WHAT'S INCLUDED</div>
+            <div class="wf-list-item">
+              <div class="wf-icon wf-icon-sq" style="width:22px;height:22px;background:var(--g4);flex-shrink:0"></div>
+              <div><div class="wf-text-sm" style="width:140px;"></div><div class="wf-text-sm" style="width:100px;"></div></div>
+            </div>
+            <div class="wf-list-item">
+              <div class="wf-icon wf-icon-sq" style="width:22px;height:22px;background:var(--g4);flex-shrink:0"></div>
+              <div><div class="wf-text-sm" style="width:120px;"></div><div class="wf-text-sm" style="width:90px;"></div></div>
+            </div>
+            <div class="wf-list-item">
+              <div class="wf-icon wf-icon-sq" style="width:22px;height:22px;background:var(--g4);flex-shrink:0"></div>
+              <div><div class="wf-text-sm" style="width:130px;"></div><div class="wf-text-sm" style="width:80px;"></div></div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:14px;">
+              <div class="wf-btn ghost" style="flex:1"><div class="wf-btn-label" style="width:70%"></div></div>
+              <div class="wf-btn" style="flex:2"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home-ind"></div>
+      </div>
+    </div>
+
+    <div class="annotation-panel">
+      <div>
+        <div class="ann-screen-title"><div class="ann-screen-num">7</div>Programme Preview</div>
+        <div class="ann-screen-sub">Patient sees their personalised programme before committing. Reduces drop-off by setting expectations. "Adjust" option lets them modify without restarting intake.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Layout Notes</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Programme card — name, type (CBT / mindfulness / hybrid), duration, session frequency, estimated daily time</div>
+        <div class="ann-item"><div class="ann-dot note"></div>"What's included" list — 3 key features, icon + label format. Max 3 items — don't overwhelm.</div>
+        <div class="ann-item"><div class="ann-dot ok"></div>"Adjust programme" ghost button — opens intensity/frequency preferences without re-doing intake</div>
+        <div class="ann-item"><div class="ann-dot note"></div>No HCP information visible here — don't remind patient this is a medical device at moment of commitment</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Progress bar = 87% — patient must feel almost done at this point. Seeing high progress increases completion.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Components</div>
+        <div class="component-tags">
+          <span class="ctag">PROGRAMME_CARD</span>
+          <span class="ctag">FEATURE_TAGS</span>
+          <span class="ctag">FEATURE_LIST</span>
+          <span class="ctag">BTN_ADJUST</span>
+          <span class="ctag">BTN_START</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 8: READY ── -->
+  <div class="screen-section" id="screen-7">
+    <div class="phone-frame">
+      <div class="phone-outer">
+        <div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div>
+        <div class="phone-screen">
+          <div class="status-bar"><div>9:41</div><div class="status-icons"><div class="status-icon signal"></div><div class="status-icon wifi"></div><div class="status-icon"></div></div></div>
+
+          <!-- celebration / completion -->
+          <div style="background:var(--g2);height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-bottom:1.5px dashed var(--g4);">
+            <div class="wf-icon" style="width:48px;height:48px;background:var(--g5)"></div>
+            <div class="wf-text-md" style="width:80px;"></div>
+          </div>
+
+          <div class="wf-screen-body" style="padding-top:16px;">
+            <div class="wf-text-lg" style="width:85%;margin:0 auto 6px;"></div>
+            <div style="text-align:center;margin-bottom:20px;">
+              <div class="wf-text-sm w70 center"></div>
+              <div class="wf-text-sm w50 center"></div>
+            </div>
+
+            <!-- notification prompt -->
+            <div class="wf-box" style="padding:12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+              <div class="wf-icon wf-icon-sq" style="width:28px;height:28px;background:var(--g4);flex-shrink:0"></div>
+              <div style="flex:1;">
+                <div class="wf-text-sm" style="width:80%;"></div>
+                <div class="wf-text-sm w60"></div>
+              </div>
+              <div class="wf-btn sm" style="width:50px;flex-shrink:0;"></div>
+            </div>
+
+            <!-- first session CTA -->
+            <div class="wf-btn" style="margin-bottom:8px;"></div>
+            <div class="wf-btn ghost" style=""></div>
+
+            <!-- share / data note -->
+            <div style="background:var(--g1);border-radius:6px;padding:8px;margin-top:10px;border:1px solid var(--g3);">
+              <div class="wf-text-sm w80"></div>
+              <div class="wf-text-sm w60"></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home-ind"></div>
+      </div>
+    </div>
+
+    <div class="annotation-panel">
+      <div>
+        <div class="ann-screen-title"><div class="ann-screen-num">8</div>Onboarding Complete — You're Ready</div>
+        <div class="ann-screen-sub">Final onboarding screen. Patient has completed all steps. Goal: celebrate completion, set up notifications, and launch the first session with momentum — not bureaucracy.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Layout Notes</div>
+        <div class="ann-item"><div class="ann-dot ok"></div>Celebration zone at top — illustration or animation (lottie). Communicates success clearly before any text.</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Notification permission prompt — inline card, not OS alert. Explain why before triggering system dialog.</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Primary CTA: "Start your first session" — launch into programme immediately. High first-session rate = better 30-day retention.</div>
+        <div class="ann-item"><div class="ann-dot note"></div>Secondary: "Explore first" — let patient look around the app without starting</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Small note at bottom: "Your doctor receives a summary of your progress" — transparency on data sharing. Do not hide this.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Retention Design Note</div>
+        <div class="ann-item"><div class="ann-dot warn"></div>Research on DTx apps: patients who complete a session within 24h of onboarding have 3× the 30-day retention rate. This screen must funnel to first session — not to settings, not to a tour.</div>
+      </div>
+      <div class="ann-card">
+        <div class="ann-card-title">Components</div>
+        <div class="component-tags">
+          <span class="ctag">CELEBRATION_ZONE</span>
+          <span class="ctag">NOTIF_PROMPT_CARD</span>
+          <span class="ctag">BTN_START_SESSION</span>
+          <span class="ctag">BTN_EXPLORE</span>
+          <span class="ctag">DATA_TRANSPARENCY_NOTE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ALL SCREENS VIEW -->
+<div class="all-screens-view" id="board-all">
+  <div class="mini-screen-wrap" onclick="goToScreenFromAll(0)">
+    <div class="phone-outer"><div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div><div class="phone-screen"><div class="wf-img" style="height:80px;border-radius:0;border:none;border-bottom:1.5px dashed var(--g3)"><div class="wf-img-label" style="font-size:0.45rem">IMAGE</div></div><div style="padding:8px"><div class="wf-text-lg" style="height:10px"></div><div class="wf-text-md" style="height:7px"></div><div class="wf-btn" style="height:22px;margin-top:8px"></div><div class="wf-btn ghost" style="height:18px"></div></div></div></div>
+    <div class="mini-label"><div class="mini-num">01</div>Welcome</div>
+  </div>
+  <div class="mini-screen-wrap" onclick="goToScreenFromAll(1)">
+    <div class="phone-outer"><div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div><div class="phone-screen"><div style="padding:8px"><div class="wf-progress" style="margin-bottom:8px"><div class="wf-progress-fill" style="width:12%"></div></div><div class="wf-text-lg" style="height:10px"></div><div style="display:flex;gap:4px;margin:8px 0"><div class="wf-box" style="flex:1;height:28px"></div><div class="wf-box light" style="flex:1;height:28px"></div><div class="wf-box light" style="flex:1;height:28px"></div><div class="wf-box light" style="flex:1;height:28px"></div></div><div class="wf-btn" style="height:22px;margin-top:8px"></div></div></div></div>
+    <div class="mini-label"><div class="mini-num">02</div>Code Entry</div>
+  </div>
+  <div class="mini-screen-wrap" onclick="goToScreenFromAll(2)">
+    <div class="phone-outer"><div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div><div class="phone-screen"><div style="padding:8px"><div class="wf-progress" style="margin-bottom:8px"><div class="wf-progress-fill" style="width:25%"></div></div><div class="wf-box dark" style="height:28px;margin-bottom:6px"></div><div class="wf-divider"></div><div class="wf-input" style="height:22px;margin-bottom:4px"></div><div class="wf-input" style="height:22px;margin-bottom:4px"></div><div class="wf-btn" style="height:22px;margin-top:4px"></div></div></div></div>
+    <div class="mini-label"><div class="mini-num">03</div>Account</div>
+  </div>
+  <div class="mini-screen-wrap" onclick="goToScreenFromAll(3)">
+    <div class="phone-outer"><div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div><div class="phone-screen"><div style="padding:8px"><div class="wf-progress" style="margin-bottom:8px"><div class="wf-progress-fill" style="width:37%"></div></div><div class="wf-text-lg" style="height:10px;margin-bottom:8px"></div><div class="wf-check-row" style="margin-bottom:5px"><div class="wf-checkbox checked" style="width:12px;height:12px"></div><div style="flex:1"><div class="wf-text-sm"></div></div></div><div class="wf-check-row" style="margin-bottom:5px"><div class="wf-checkbox" style="width:12px;height:12px"></div><div style="flex:1"><div class="wf-text-sm"></div></div></div><div class="wf-check-row"><div class="wf-checkbox" style="width:12px;height:12px"></div><div style="flex:1"><div class="wf-text-sm"></div></div></div><div class="wf-btn" style="height:22px;margin-top:8px"></div></div></div></div>
+    <div class="mini-label"><div class="mini-num">04</div>Consent</div>
+  </div>
+  <div class="mini-screen-wrap" onclick="goToScreenFromAll(4)">
+    <div class="phone-outer"><div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div><div class="phone-screen"><div style="padding:8px"><div class="wf-progress" style="margin-bottom:8px"><div class="wf-progress-fill" style="width:50%"></div></div><div class="wf-text-lg" style="height:10px;margin-bottom:8px"></div><div class="wf-radio-row selected" style="padding:6px 8px;margin-bottom:4px"><div class="wf-radio selected" style="width:10px;height:10px"></div><div class="wf-text-sm" style="width:80px;margin:0"></div></div><div class="wf-radio-row" style="padding:6px 8px;margin-bottom:4px"><div class="wf-radio" style="width:10px;height:10px"></div><div class="wf-text-sm" style="width:60px;margin:0"></div></div><div class="wf-radio-row" style="padding:6px 8px"><div class="wf-radio" style="width:10px;height:10px"></div><div class="wf-text-sm" style="width:70px;margin:0"></div></div></div></div></div>
+    <div class="mini-label"><div class="mini-num">05</div>Intake (1)</div>
+  </div>
+  <div class="mini-screen-wrap" onclick="goToScreenFromAll(5)">
+    <div class="phone-outer"><div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div><div class="phone-screen"><div style="padding:8px"><div class="wf-progress" style="margin-bottom:8px"><div class="wf-progress-fill" style="width:62%"></div></div><div class="wf-text-lg" style="height:10px;margin-bottom:10px"></div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><div class="wf-icon" style="width:20px;height:20px;background:var(--g3)"></div><div class="wf-icon" style="width:20px;height:20px;background:var(--g3)"></div><div class="wf-icon" style="width:20px;height:20px;background:var(--g3)"></div><div class="wf-icon" style="width:20px;height:20px;background:var(--g4)"></div></div><div class="wf-slider-track"><div class="wf-slider-fill" style="width:70%"></div><div class="wf-slider-thumb" style="left:66%;width:12px;height:12px"></div></div></div></div></div>
+    <div class="mini-label"><div class="mini-num">06</div>Intake (2)</div>
+  </div>
+  <div class="mini-screen-wrap" onclick="goToScreenFromAll(6)">
+    <div class="phone-outer"><div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div><div class="phone-screen"><div style="padding:8px"><div class="wf-progress" style="margin-bottom:8px"><div class="wf-progress-fill" style="width:87%"></div></div><div class="wf-box dark" style="height:60px;border-radius:8px;margin-bottom:8px;display:flex;align-items:center;justify-content:center"><div class="wf-icon" style="width:24px;height:24px;background:var(--g5)"></div></div><div class="wf-list-item" style="padding:4px 0"><div class="wf-icon wf-icon-sq" style="width:16px;height:16px;background:var(--g4);flex-shrink:0"></div><div class="wf-text-sm" style="width:80px;margin:0"></div></div><div class="wf-list-item" style="padding:4px 0"><div class="wf-icon wf-icon-sq" style="width:16px;height:16px;background:var(--g4);flex-shrink:0"></div><div class="wf-text-sm" style="width:70px;margin:0"></div></div><div class="wf-btn" style="height:22px;margin-top:6px"></div></div></div></div>
+    <div class="mini-label"><div class="mini-num">07</div>Programme</div>
+  </div>
+  <div class="mini-screen-wrap" onclick="goToScreenFromAll(7)">
+    <div class="phone-outer"><div class="phone-notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div><div class="phone-screen"><div style="background:var(--g2);height:60px;display:flex;align-items:center;justify-content:center"><div class="wf-icon" style="width:28px;height:28px;background:var(--g5)"></div></div><div style="padding:8px"><div class="wf-text-lg" style="height:10px;margin-bottom:8px"></div><div class="wf-box" style="height:28px;margin-bottom:8px"></div><div class="wf-btn" style="height:22px;margin-bottom:5px"></div><div class="wf-btn ghost" style="height:18px"></div></div></div></div>
+    <div class="mini-label"><div class="mini-num">08</div>Ready</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="background:var(--board);border-top:1px solid var(--border);padding:12px 32px;display:flex;justify-content:space-between;align-items:center;">
+  <div style="font-family:var(--mono);font-size:0.62rem;color:var(--muted)">MindBridge · Patient Onboarding · Lo-Fi Wireframes · Nada Abdelhalim · Portfolio 2026</div>
+  <div style="font-family:var(--mono);font-size:0.62rem;color:var(--muted)">8 screens · Next: Mid-Fi → Hi-Fi (MindBridge HCP Dashboard)</div>
+</div>
+
+<script>
+let currentScreen = 0;
+let boardView = 'single';
+
+function goToScreen(idx, el) {
+  currentScreen = idx;
+  document.querySelectorAll('.screen-section').forEach((s,i) => {
+    s.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('.snav-item').forEach((s,i) => {
+    s.classList.toggle('active', i === idx);
+  });
+}
+
+function goToScreenFromAll(idx) {
+  setBoardView('single', document.querySelector('.bnav-tab'));
+  goToScreen(idx, null);
+}
+
+function setBoardView(v, el) {
+  boardView = v;
+  document.querySelectorAll('.bnav-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.querySelectorAll('.bnav-tab')[v === 'single' ? 0 : 1].classList.add('active');
+
+  const single = document.getElementById('board-single');
+  const all = document.getElementById('board-all');
+  const nav = document.getElementById('screen-nav-bar');
+
+  if (v === 'single') {
+    single.style.display = 'flex';
+    single.style.flexDirection = 'column';
+    all.classList.remove('active');
+    nav.style.display = 'flex';
+  } else {
+    single.style.display = 'none';
+    all.classList.add('active');
+    nav.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>

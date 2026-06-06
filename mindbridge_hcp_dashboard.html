@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindBridge — HCP Clinical Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f6f4f0;
+  --bg2:       #edeae4;
+  --bg3:       #e4e0d8;
+  --card:      #fdfcfa;
+  --border:    #d8d4cc;
+  --border2:   #c8c4bc;
+  --ink:       #1c1a16;
+  --mid:       #5c5850;
+  --muted:     #9c9890;
+
+  --sage:      #4a7c6f;
+  --sage-l:    #eaf3f0;
+  --sage-m:    #b8d8d2;
+  --sage-d:    #3a6259;
+
+  --amber:     #c47a2a;
+  --amber-l:   #fef4e6;
+  --amber-m:   #f0c880;
+
+  --rose:      #b85060;
+  --rose-l:    #fdeef0;
+  --rose-m:    #e8a8b4;
+
+  --blue:      #3a6090;
+  --blue-l:    #eaf0f8;
+  --blue-m:    #a8c0d8;
+
+  --low:       #4a9e6a;
+  --mid-col:   #c4903a;
+  --high:      #c45050;
+
+  --serif:     'Libre Baskerville', Georgia, serif;
+  --sans:      'Instrument Sans', sans-serif;
+  --r:         10px;
+  --shadow:    0 1px 8px rgba(28,26,22,0.06);
+  --shadow-lg: 0 4px 24px rgba(28,26,22,0.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 54px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.topbar-logo {
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-mark {
+  width: 28px; height: 28px;
+  background: var(--sage);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.logo-name {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #e8e4dc;
+  letter-spacing: 0.2px;
+}
+.logo-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--sage-m);
+  background: rgba(74,124,111,0.2);
+  border: 1px solid rgba(74,124,111,0.3);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+.topbar-right {
+  display: flex; align-items: center; gap: 12px;
+}
+.hcp-chip {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.72rem; color: #a0a898;
+}
+.hcp-avatar {
+  width: 28px; height: 28px;
+  background: var(--sage-d);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: #fff;
+}
+.alert-bell {
+  position: relative; cursor: pointer;
+}
+.alert-bell svg { color: #7a7870; transition: color 0.15s; }
+.alert-bell:hover svg { color: var(--amber); }
+.bell-dot {
+  position: absolute; top: -2px; right: -2px;
+  width: 8px; height: 8px;
+  background: var(--rose); border-radius: 50%;
+  border: 1.5px solid var(--ink);
+}
+
+/* ── LAYOUT ── */
+.app-body { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 54px); }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-section { padding: 16px 12px 8px; }
+.sidebar-label {
+  font-size: 0.58rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); padding: 0 4px;
+  margin-bottom: 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 6px;
+  cursor: pointer; transition: background 0.14s;
+  color: var(--mid); font-size: 0.78rem; font-weight: 500;
+  margin-bottom: 1px;
+}
+.nav-item:hover { background: var(--bg2); color: var(--ink); }
+.nav-item.active { background: var(--sage-l); color: var(--sage); }
+.nav-item .nav-icon { font-size: 0.9rem; width: 18px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  font-size: 0.6rem; font-weight: 700;
+  background: var(--rose-l); color: var(--rose);
+  border: 1px solid var(--rose-m);
+  padding: 1px 6px; border-radius: 10px;
+}
+.nav-badge.amber { background: var(--amber-l); color: var(--amber); border-color: var(--amber-m); }
+
+.sidebar-divider { height: 1px; background: var(--border); margin: 8px 12px; }
+
+.patient-quick {
+  padding: 8px 12px;
+  flex: 1;
+}
+.pq-title {
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.pq-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 8px; border-radius: 6px;
+  cursor: pointer; transition: background 0.14s;
+  margin-bottom: 2px;
+}
+.pq-item:hover { background: var(--bg2); }
+.pq-item.alert { background: var(--rose-l); }
+.pq-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.62rem; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.pq-info { flex: 1; min-width: 0; }
+.pq-name { font-size: 0.72rem; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pq-status { font-size: 0.62rem; color: var(--muted); }
+.pq-alert-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rose); flex-shrink: 0; }
+
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+/* ── PATIENT LIST VIEW ── */
+.view { display: none; }
+.view.active { display: flex; flex-direction: column; flex: 1; }
+
+/* summary bar */
+.summary-bar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+}
+.summary-left h2 {
+  font-family: var(--serif);
+  font-size: 1.2rem; font-weight: 400; color: var(--ink);
+}
+.summary-left p { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.summary-stats { display: flex; gap: 20px; }
+.s-stat { text-align: center; }
+.s-num { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; line-height: 1; }
+.s-lbl { font-size: 0.6rem; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+.s-stat.alerts .s-num { color: var(--rose); }
+.s-stat.review .s-num { color: var(--amber); }
+.s-stat.stable .s-num { color: var(--sage); }
+.toolbar {
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.search-input {
+  padding: 7px 12px; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--card);
+  font-family: var(--sans); font-size: 0.78rem; color: var(--ink);
+  outline: none; width: 220px; transition: border 0.15s;
+}
+.search-input:focus { border-color: var(--sage); }
+.search-input::placeholder { color: var(--muted); }
+.filter-chip {
+  padding: 5px 12px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--card);
+  font-size: 0.7rem; font-weight: 500; color: var(--mid);
+  cursor: pointer; transition: all 0.14s; font-family: var(--sans);
+}
+.filter-chip:hover { border-color: var(--sage-m); color: var(--sage); }
+.filter-chip.active { background: var(--sage-l); border-color: var(--sage-m); color: var(--sage); font-weight: 600; }
+.sort-select {
+  margin-left: auto; padding: 6px 10px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--card); font-family: var(--sans);
+  font-size: 0.72rem; color: var(--mid); outline: none; cursor: pointer;
+}
+
+/* patient table */
+.patient-table-wrap { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.patient-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--card); border-radius: var(--r);
+  overflow: hidden; box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.patient-table thead tr {
+  background: var(--ink);
+}
+.patient-table th {
+  padding: 11px 16px; text-align: left;
+  font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 1.8px; text-transform: uppercase;
+  color: #7a7870; white-space: nowrap;
+}
+.patient-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.14s; cursor: pointer;
+}
+.patient-table tbody tr:last-child { border-bottom: none; }
+.patient-table tbody tr:hover { background: var(--bg2); }
+.patient-table tbody tr.alert-row { background: rgba(184,80,96,0.03); }
+.patient-table td { padding: 13px 16px; vertical-align: middle; }
+.pt-name-cell { display: flex; align-items: center; gap: 10px; }
+.pt-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.pt-name { font-size: 0.82rem; font-weight: 500; color: var(--ink); }
+.pt-id { font-size: 0.62rem; color: var(--muted); margin-top: 1px; }
+.phq-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.72rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 4px;
+}
+.phq-badge.minimal { background: var(--sage-l); color: var(--sage); }
+.phq-badge.mild { background: #eef8e8; color: #4a8a3a; }
+.phq-badge.moderate { background: var(--amber-l); color: var(--amber); }
+.phq-badge.mod-severe { background: #fdeee8; color: #c06030; }
+.phq-badge.severe { background: var(--rose-l); color: var(--rose); }
+.trend-cell { display: flex; align-items: center; gap: 6px; }
+.trend-arrow { font-size: 0.85rem; }
+.trend-arrow.up { color: var(--rose); }
+.trend-arrow.down { color: var(--sage); }
+.trend-arrow.flat { color: var(--muted); }
+.trend-val { font-size: 0.72rem; color: var(--mid); }
+.spark { display: flex; align-items: flex-end; gap: 2px; height: 20px; }
+.spark-bar { width: 4px; border-radius: 1px; background: var(--sage-m); transition: background 0.2s; }
+.spark-bar.high { background: var(--rose-m); }
+.spark-bar.mid { background: var(--amber-m); }
+.adherence-wrap { display: flex; align-items: center; gap: 8px; }
+.adherence-track { width: 60px; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.adherence-fill { height: 100%; border-radius: 2px; }
+.adherence-val { font-size: 0.72rem; color: var(--mid); }
+.status-pill {
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 3px;
+}
+.status-pill.alert { background: var(--rose-l); color: var(--rose); border: 1px solid var(--rose-m); }
+.status-pill.review { background: var(--amber-l); color: var(--amber); border: 1px solid var(--amber-m); }
+.status-pill.stable { background: var(--sage-l); color: var(--sage); border: 1px solid var(--sage-m); }
+.status-pill.new { background: var(--blue-l); color: var(--blue); border: 1px solid var(--blue-m); }
+.action-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: 5px; padding: 4px 10px;
+  font-size: 0.68rem; font-weight: 500; color: var(--mid);
+  cursor: pointer; font-family: var(--sans); transition: all 0.14s;
+}
+.action-btn:hover { background: var(--ink); color: #e8e4dc; border-color: var(--ink); }
+
+/* ── PATIENT DETAIL VIEW ── */
+.detail-header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex; align-items: center; gap: 16px;
+}
+.back-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 12px;
+  font-size: 0.72rem; color: var(--mid);
+  cursor: pointer; font-family: var(--sans);
+  display: flex; align-items: center; gap: 5px;
+  transition: all 0.14s;
+}
+.back-btn:hover { background: var(--bg2); color: var(--ink); }
+.detail-pt-info { flex: 1; }
+.detail-pt-name {
+  font-family: var(--serif); font-size: 1.1rem;
+  font-weight: 400; color: var(--ink);
+}
+.detail-pt-meta { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.detail-actions { display: flex; gap: 8px; }
+.btn-primary {
+  background: var(--sage); color: #fff; border: none;
+  border-radius: 6px; padding: 8px 16px;
+  font-size: 0.74rem; font-weight: 600;
+  cursor: pointer; font-family: var(--sans); transition: background 0.15s;
+}
+.btn-primary:hover { background: var(--sage-d); }
+.btn-secondary {
+  background: var(--card); color: var(--mid);
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 14px; font-size: 0.74rem; font-weight: 500;
+  cursor: pointer; font-family: var(--sans); transition: all 0.14s;
+}
+.btn-secondary:hover { background: var(--bg2); color: var(--ink); }
+
+.detail-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.detail-grid.wide { grid-template-columns: 2fr 1fr; }
+
+.dcard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.dcard-title {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dcard-title a {
+  font-size: 0.65rem; color: var(--sage); text-decoration: none;
+  font-weight: 600; letter-spacing: 0; text-transform: none;
+}
+
+/* PHQ-9 score display */
+.score-display {
+  display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px;
+}
+.score-big {
+  font-family: var(--serif); font-size: 3rem; font-weight: 700;
+  line-height: 1; color: var(--ink);
+}
+.score-info {}
+.score-label { font-size: 0.72rem; font-weight: 600; margin-bottom: 2px; }
+.score-change {
+  font-size: 0.68rem; color: var(--mid);
+  display: flex; align-items: center; gap: 4px;
+}
+.score-change.better { color: var(--sage); }
+.score-change.worse { color: var(--rose); }
+
+/* phq bar */
+.phq-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.phq-bar-label { font-size: 0.65rem; color: var(--mid); width: 70px; flex-shrink: 0; }
+.phq-bar-track { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.phq-bar-fill { height: 100%; border-radius: 3px; }
+.phq-bar-val { font-size: 0.65rem; color: var(--mid); width: 20px; text-align: right; flex-shrink: 0; }
+
+/* mood chart */
+.mood-chart { height: 100px; display: flex; align-items: flex-end; gap: 4px; padding-top: 8px; }
+.mood-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.mood-bar { width: 100%; border-radius: 3px 3px 0 0; transition: height 0.4s ease; }
+.mood-day { font-size: 0.55rem; color: var(--muted); }
+
+/* gad-7 */
+.gad-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 0; border-bottom: 1px solid rgba(216,212,204,0.5);
+  font-size: 0.74rem;
+}
+.gad-row:last-child { border-bottom: none; }
+.gad-q { color: var(--mid); flex: 1; padding-right: 12px; line-height: 1.4; }
+.gad-score {
+  font-weight: 600; font-size: 0.72rem;
+  width: 24px; text-align: center;
+  padding: 2px 5px; border-radius: 3px;
+}
+.gad-score.s0 { background: var(--sage-l); color: var(--sage); }
+.gad-score.s1 { background: #eef8e8; color: #4a8a3a; }
+.gad-score.s2 { background: var(--amber-l); color: var(--amber); }
+.gad-score.s3 { background: var(--rose-l); color: var(--rose); }
+
+/* timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item {
+  display: grid; grid-template-columns: 80px 16px 1fr;
+  gap: 10px; align-items: start; padding: 10px 0;
+}
+.tl-date { font-size: 0.65rem; color: var(--muted); text-align: right; padding-top: 2px; }
+.tl-dot-col { display: flex; flex-direction: column; align-items: center; }
+.tl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+.tl-line { width: 1px; flex: 1; background: var(--border); margin-top: 3px; min-height: 20px; }
+.tl-content {}
+.tl-title { font-size: 0.75rem; font-weight: 500; color: var(--ink); }
+.tl-body { font-size: 0.7rem; color: var(--mid); line-height: 1.5; margin-top: 2px; }
+
+/* notes */
+.note-area {
+  width: 100%; border: 1px solid var(--border); border-radius: 6px;
+  padding: 10px 12px; font-family: var(--sans); font-size: 0.78rem;
+  color: var(--ink); background: var(--bg); resize: vertical;
+  min-height: 80px; outline: none; line-height: 1.6;
+  transition: border 0.15s;
+}
+.note-area:focus { border-color: var(--sage); }
+.note-area::placeholder { color: var(--border2); }
+.note-save {
+  margin-top: 8px; float: right;
+  background: var(--sage); color: #fff; border: none;
+  border-radius: 5px; padding: 6px 14px;
+  font-size: 0.72rem; font-weight: 600;
+  cursor: pointer; font-family: var(--sans); transition: background 0.15s;
+}
+.note-save:hover { background: var(--sage-d); }
+
+/* alert card */
+.alert-card {
+  background: var(--rose-l); border: 1px solid var(--rose-m);
+  border-left: 4px solid var(--rose);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 12px 16px; margin-bottom: 16px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.alert-body {}
+.alert-title { font-size: 0.78rem; font-weight: 600; color: var(--rose); margin-bottom: 3px; }
+.alert-text { font-size: 0.72rem; color: var(--mid); line-height: 1.5; }
+.alert-actions { display: flex; gap: 8px; margin-top: 8px; }
+.alert-btn {
+  font-size: 0.68rem; font-weight: 600; padding: 4px 10px;
+  border-radius: 4px; cursor: pointer; font-family: var(--sans); border: none;
+  transition: all 0.14s;
+}
+.alert-btn.primary { background: var(--rose); color: #fff; }
+.alert-btn.primary:hover { background: #a04050; }
+.alert-btn.secondary { background: var(--rose-m); color: var(--rose); }
+
+/* medication row */
+.med-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid rgba(216,212,204,0.5);
+  font-size: 0.75rem;
+}
+.med-row:last-child { border-bottom: none; }
+.med-name { font-weight: 500; color: var(--ink); }
+.med-dose { color: var(--mid); font-size: 0.68rem; }
+.med-status { font-size: 0.62rem; font-weight: 600; padding: 2px 7px; border-radius: 3px; }
+.med-status.active { background: var(--sage-l); color: var(--sage); }
+.med-status.paused { background: var(--amber-l); color: var(--amber); }
+
+/* risk indicator */
+.risk-meter {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 4px;
+}
+.risk-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.risk-label { font-size: 0.68rem; color: var(--mid); width: 100px; flex-shrink: 0; }
+.risk-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.risk-fill { height: 100%; border-radius: 4px; }
+.risk-val { font-size: 0.68rem; font-weight: 600; width: 32px; text-align: right; flex-shrink: 0; }
+
+/* portfolio watermark */
+.portfolio-note {
+  text-align: center; padding: 12px;
+  font-size: 0.65rem; color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--card);
+  font-style: italic; letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">
+      <div class="logo-mark">Mb</div>
+      <div class="logo-name">MindBridge</div>
+      <div class="logo-badge">HCP Portal</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="alert-bell" title="2 alerts">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="bell-dot"></div>
+    </div>
+    <div class="hcp-chip">
+      <div class="hcp-avatar">DK</div>
+      <span>Dr. Klein</span>
+    </div>
+  </div>
+</header>
+
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <div class="nav-item active" onclick="showView('list')">
+        <span class="nav-icon">👥</span> My Patients
+        <span class="nav-badge">2</span>
+      </div>
+      <div class="nav-item" onclick="showView('list')">
+        <span class="nav-icon">📊</span> Analytics
+      </div>
+      <div class="nav-item" onclick="showView('list')">
+        <span class="nav-icon">📅</span> Appointments
+        <span class="nav-badge amber">3</span>
+      </div>
+      <div class="nav-item" onclick="showView('list')">
+        <span class="nav-icon">📋</span> Reports
+      </div>
+      <div class="nav-item" onclick="showView('list')">
+        <span class="nav-icon">⚙</span> Settings
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="patient-quick">
+      <div class="pq-title">Quick Access</div>
+      <div class="pq-item alert" onclick="showDetail('anna')">
+        <div class="pq-avatar" style="background:#b85060">AM</div>
+        <div class="pq-info">
+          <div class="pq-name">Anna M.</div>
+          <div class="pq-status">PHQ-9 worsening ↑</div>
+        </div>
+        <div class="pq-alert-dot"></div>
+      </div>
+      <div class="pq-item" onclick="showDetail('thomas')">
+        <div class="pq-avatar" style="background:#3a6090">TH</div>
+        <div class="pq-info">
+          <div class="pq-name">Thomas H.</div>
+          <div class="pq-status">Stable · 78% adherence</div>
+        </div>
+      </div>
+      <div class="pq-item" onclick="showDetail('sarah')">
+        <div class="pq-avatar" style="background:#4a7c6f">SK</div>
+        <div class="pq-info">
+          <div class="pq-name">Sarah K.</div>
+          <div class="pq-status">Improving ↓ PHQ-9</div>
+        </div>
+      </div>
+      <div class="pq-item" onclick="showDetail('list')">
+        <div class="pq-avatar" style="background:#7a6090">MR</div>
+        <div class="pq-info">
+          <div class="pq-name">Marcus R.</div>
+          <div class="pq-status">New · Week 2</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- PATIENT LIST VIEW -->
+    <div class="view active" id="view-list">
+      <div class="summary-bar">
+        <div class="summary-left">
+          <h2>Patient Overview</h2>
+          <p>MindBridge Digital Therapeutic · Depression & Anxiety Programme · June 2026</p>
+        </div>
+        <div class="summary-stats">
+          <div class="s-stat alerts">
+            <div class="s-num">2</div>
+            <div class="s-lbl">Alerts</div>
+          </div>
+          <div class="s-stat review">
+            <div class="s-num">3</div>
+            <div class="s-lbl">Review Due</div>
+          </div>
+          <div class="s-stat stable">
+            <div class="s-num">9</div>
+            <div class="s-lbl">Stable</div>
+          </div>
+          <div class="s-stat">
+            <div class="s-num" style="color:var(--blue)">14</div>
+            <div class="s-lbl">Total</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input class="search-input" type="text" placeholder="Search patients…">
+        <button class="filter-chip active" onclick="filterClick(this)">All</button>
+        <button class="filter-chip" onclick="filterClick(this)">⚠ Alerts</button>
+        <button class="filter-chip" onclick="filterClick(this)">Review Due</button>
+        <button class="filter-chip" onclick="filterClick(this)">Stable</button>
+        <select class="sort-select">
+          <option>Sort: PHQ-9 Score</option>
+          <option>Sort: Trend</option>
+          <option>Sort: Last Active</option>
+          <option>Sort: Adherence</option>
+        </select>
+      </div>
+
+      <div class="patient-table-wrap">
+        <table class="patient-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>PHQ-9</th>
+              <th>Severity</th>
+              <th>4-Week Trend</th>
+              <th>GAD-7</th>
+              <th>Adherence</th>
+              <th>Last Active</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="alert-row" onclick="showDetail('anna')">
+              <td><div class="pt-name-cell">
+                <div class="pt-avatar" style="background:#b85060">AM</div>
+                <div><div class="pt-name">Anna Müller</div><div class="pt-id">MBR-0041 · F. 34</div></div>
+              </div></td>
+              <td><span style="font-family:'Libre Baskerville';font-size:1.1rem;font-weight:700;color:var(--rose)">18</span></td>
+              <td><span class="phq-badge mod-severe">Mod-Severe</span></td>
+              <td><div class="trend-cell">
+                <span class="trend-arrow up">↑</span>
+                <span class="trend-val">+4 pts</span>
+                <div class="spark">
+                  <div class="spark-bar" style="height:8px;background:var(--sage-m)"></div>
+                  <div class="spark-bar" style="height:10px;background:var(--sage-m)"></div>
+                  <div class="spark-bar mid" style="height:12px"></div>
+                  <div class="spark-bar mid" style="height:14px"></div>
+                  <div class="spark-bar high" style="height:18px"></div>
+                </div>
+              </div></td>
+              <td><span style="font-weight:600;color:var(--amber)">14</span></td>
+              <td><div class="adherence-wrap">
+                <div class="adherence-track"><div class="adherence-fill" style="width:52%;background:var(--amber)"></div></div>
+                <span class="adherence-val">52%</span>
+              </div></td>
+              <td style="font-size:0.72rem;color:var(--mid)">2 days ago</td>
+              <td><span class="status-pill alert">Alert</span></td>
+              <td><button class="action-btn" onclick="event.stopPropagation();showDetail('anna')">View →</button></td>
+            </tr>
+
+            <tr onclick="showDetail('thomas')">
+              <td><div class="pt-name-cell">
+                <div class="pt-avatar" style="background:#3a6090">TH</div>
+                <div><div class="pt-name">Thomas Hartmann</div><div class="pt-id">MBR-0038 · M. 47</div></div>
+              </div></td>
+              <td><span style="font-family:'Libre Baskerville';font-size:1.1rem;font-weight:700;color:var(--amber)">11</span></td>
+              <td><span class="phq-badge moderate">Moderate</span></td>
+              <td><div class="trend-cell">
+                <span class="trend-arrow flat">→</span>
+                <span class="trend-val">±1 pt</span>
+                <div class="spark">
+                  <div class="spark-bar mid" style="height:14px"></div>
+                  <div class="spark-bar mid" style="height:13px"></div>
+                  <div class="spark-bar mid" style="height:15px"></div>
+                  <div class="spark-bar mid" style="height:13px"></div>
+                  <div class="spark-bar mid" style="height:14px"></div>
+                </div>
+              </div></td>
+              <td><span style="font-weight:600;color:var(--mid)">9</span></td>
+              <td><div class="adherence-wrap">
+                <div class="adherence-track"><div class="adherence-fill" style="width:78%;background:var(--sage)"></div></div>
+                <span class="adherence-val">78%</span>
+              </div></td>
+              <td style="font-size:0.72rem;color:var(--mid)">Today</td>
+              <td><span class="status-pill review">Review</span></td>
+              <td><button class="action-btn" onclick="event.stopPropagation();showDetail('thomas')">View →</button></td>
+            </tr>
+
+            <tr onclick="showDetail('sarah')">
+              <td><div class="pt-name-cell">
+                <div class="pt-avatar" style="background:#4a7c6f">SK</div>
+                <div><div class="pt-name">Sarah Keller</div><div class="pt-id">MBR-0029 · F. 28</div></div>
+              </div></td>
+              <td><span style="font-family:'Libre Baskerville';font-size:1.1rem;font-weight:700;color:var(--sage)">7</span></td>
+              <td><span class="phq-badge mild">Mild</span></td>
+              <td><div class="trend-cell">
+                <span class="trend-arrow down">↓</span>
+                <span class="trend-val">−6 pts</span>
+                <div class="spark">
+                  <div class="spark-bar high" style="height:18px"></div>
+                  <div class="spark-bar mid" style="height:15px"></div>
+                  <div class="spark-bar" style="height:12px;background:var(--sage-m)"></div>
+                  <div class="spark-bar" style="height:9px;background:var(--sage-m)"></div>
+                  <div class="spark-bar" style="height:7px;background:var(--sage-m)"></div>
+                </div>
+              </div></td>
+              <td><span style="font-weight:600;color:var(--sage)">6</span></td>
+              <td><div class="adherence-wrap">
+                <div class="adherence-track"><div class="adherence-fill" style="width:91%;background:var(--sage)"></div></div>
+                <span class="adherence-val">91%</span>
+              </div></td>
+              <td style="font-size:0.72rem;color:var(--mid)">Yesterday</td>
+              <td><span class="status-pill stable">Stable</span></td>
+              <td><button class="action-btn" onclick="event.stopPropagation();showDetail('sarah')">View →</button></td>
+            </tr>
+
+            <tr>
+              <td><div class="pt-name-cell">
+                <div class="pt-avatar" style="background:#7a6090">MR</div>
+                <div><div class="pt-name">Marcus Richter</div><div class="pt-id">MBR-0052 · M. 31</div></div>
+              </div></td>
+              <td><span style="font-family:'Libre Baskerville';font-size:1.1rem;font-weight:700;color:var(--amber)">14</span></td>
+              <td><span class="phq-badge moderate">Moderate</span></td>
+              <td><div class="trend-cell">
+                <span class="trend-arrow flat">—</span>
+                <span class="trend-val">Week 2</span>
+                <div class="spark">
+                  <div class="spark-bar mid" style="height:14px"></div>
+                  <div class="spark-bar mid" style="height:13px"></div>
+                </div>
+              </div></td>
+              <td><span style="font-weight:600;color:var(--mid)">11</span></td>
+              <td><div class="adherence-wrap">
+                <div class="adherence-track"><div class="adherence-fill" style="width:65%;background:var(--sage)"></div></div>
+                <span class="adherence-val">65%</span>
+              </div></td>
+              <td style="font-size:0.72rem;color:var(--mid)">3 days ago</td>
+              <td><span class="status-pill new">New</span></td>
+              <td><button class="action-btn">View →</button></td>
+            </tr>
+
+            <tr>
+              <td><div class="pt-name-cell">
+                <div class="pt-avatar" style="background:#6a8a5a">LW</div>
+                <div><div class="pt-name">Lena Weber</div><div class="pt-id">MBR-0033 · F. 52</div></div>
+              </div></td>
+              <td><span style="font-family:'Libre Baskerville';font-size:1.1rem;font-weight:700;color:var(--sage)">5</span></td>
+              <td><span class="phq-badge minimal">Minimal</span></td>
+              <td><div class="trend-cell">
+                <span class="trend-arrow down">↓</span>
+                <span class="trend-val">−8 pts</span>
+                <div class="spark">
+                  <div class="spark-bar high" style="height:16px"></div>
+                  <div class="spark-bar mid" style="height:13px"></div>
+                  <div class="spark-bar" style="height:10px;background:var(--sage-m)"></div>
+                  <div class="spark-bar" style="height:7px;background:var(--sage-m)"></div>
+                  <div class="spark-bar" style="height:5px;background:var(--sage-m)"></div>
+                </div>
+              </div></td>
+              <td><span style="font-weight:600;color:var(--sage)">4</span></td>
+              <td><div class="adherence-wrap">
+                <div class="adherence-track"><div class="adherence-fill" style="width:88%;background:var(--sage)"></div></div>
+                <span class="adherence-val">88%</span>
+              </div></td>
+              <td style="font-size:0.72rem;color:var(--mid)">Today</td>
+              <td><span class="status-pill stable">Stable</span></td>
+              <td><button class="action-btn">View →</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PATIENT DETAIL VIEW -->
+    <div class="view" id="view-detail">
+      <div class="detail-header">
+        <button class="back-btn" onclick="showView('list')">← All Patients</button>
+        <div class="detail-pt-info">
+          <div class="detail-pt-name" id="detail-name">Anna Müller</div>
+          <div class="detail-pt-meta" id="detail-meta">MBR-0041 · Female · 34 y/o · Active since March 2026 · Week 10 of 12</div>
+        </div>
+        <div class="detail-actions">
+          <button class="btn-secondary">Schedule Appointment</button>
+          <button class="btn-primary">Add Clinical Note</button>
+        </div>
+      </div>
+
+      <div class="detail-body">
+
+        <!-- Alert banner (conditional) -->
+        <div class="alert-card" id="detail-alert" style="display:none">
+          <div class="alert-icon">⚠</div>
+          <div class="alert-body">
+            <div class="alert-title" id="alert-title">PHQ-9 Worsening — Clinical Review Recommended</div>
+            <div class="alert-text" id="alert-text">Score increased by 4 points over 2 weeks (14 → 18). Patient adherence has dropped to 52%. Automated re-engagement message sent 2 days ago — no response. Consider direct outreach or appointment.</div>
+            <div class="alert-actions">
+              <button class="alert-btn primary">Schedule Urgent Review</button>
+              <button class="alert-btn secondary">Dismiss Alert</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top row -->
+        <div class="detail-grid">
+          <!-- PHQ-9 -->
+          <div class="dcard">
+            <div class="dcard-title">PHQ-9 Score <a href="#">History →</a></div>
+            <div class="score-display">
+              <div class="score-big" id="detail-phq">18</div>
+              <div class="score-info">
+                <div class="score-label" id="detail-severity">Moderately Severe</div>
+                <div class="score-change worse" id="detail-trend">↑ +4 pts over 2 weeks</div>
+              </div>
+            </div>
+            <div id="phq-bars">
+              <div class="phq-bar-row"><div class="phq-bar-label">Anhedonia</div><div class="phq-bar-track"><div class="phq-bar-fill" style="width:100%;background:var(--rose)"></div></div><div class="phq-bar-val">3</div></div>
+              <div class="phq-bar-row"><div class="phq-bar-label">Depressed mood</div><div class="phq-bar-track"><div class="phq-bar-fill" style="width:100%;background:var(--rose)"></div></div><div class="phq-bar-val">3</div></div>
+              <div class="phq-bar-row"><div class="phq-bar-label">Sleep</div><div class="phq-bar-track"><div class="phq-bar-fill" style="width:67%;background:var(--amber)"></div></div><div class="phq-bar-val">2</div></div>
+              <div class="phq-bar-row"><div class="phq-bar-label">Fatigue</div><div class="phq-bar-track"><div class="phq-bar-fill" style="width:100%;background:var(--rose)"></div></div><div class="phq-bar-val">3</div></div>
+              <div class="phq-bar-row"><div class="phq-bar-label">Appetite</div><div class="phq-bar-track"><div class="phq-bar-fill" style="width:67%;background:var(--amber)"></div></div><div class="phq-bar-val">2</div></div>
+              <div class="phq-bar-row"><div class="phq-bar-label">Concentration</div><div class="phq-bar-track"><div class="phq-bar-fill" style="width:33%;background:var(--sage)"></div></div><div class="phq-bar-val">1</div></div>
+              <div class="phq-bar-row"><div class="phq-bar-label">Psychomotor</div><div class="phq-bar-track"><div class="phq-bar-fill" style="width:67%;background:var(--amber)"></div></div><div class="phq-bar-val">2</div></div>
+              <div class="phq-bar-row"><div class="phq-bar-label">Suicidality</div><div class="phq-bar-track"><div class="phq-bar-fill" style="width:33%;background:var(--sage)"></div></div><div class="phq-bar-val">1</div></div>
+            </div>
+          </div>
+
+          <!-- Mood & Adherence -->
+          <div class="dcard">
+            <div class="dcard-title">Daily Mood · Last 7 Days</div>
+            <div class="mood-chart" id="mood-chart">
+              <div class="mood-bar-wrap"><div class="mood-bar" style="height:40%;background:var(--sage-m)"></div><div class="mood-day">Mon</div></div>
+              <div class="mood-bar-wrap"><div class="mood-bar" style="height:35%;background:var(--sage-m)"></div><div class="mood-day">Tue</div></div>
+              <div class="mood-bar-wrap"><div class="mood-bar" style="height:50%;background:var(--amber-m)"></div><div class="mood-day">Wed</div></div>
+              <div class="mood-bar-wrap"><div class="mood-bar" style="height:30%;background:var(--sage-m)"></div><div class="mood-day">Thu</div></div>
+              <div class="mood-bar-wrap"><div class="mood-bar" style="height:20%;background:var(--rose-m)"></div><div class="mood-day">Fri</div></div>
+              <div class="mood-bar-wrap"><div class="mood-bar" style="height:15%;background:var(--rose-m)"></div><div class="mood-day">Sat</div></div>
+              <div class="mood-bar-wrap"><div class="mood-bar" style="height:10%;background:var(--rose-m)"></div><div class="mood-day">Sun</div></div>
+            </div>
+            <div style="margin-top:16px;">
+              <div class="dcard-title" style="margin-bottom:10px;border:none;padding:0">App Adherence</div>
+              <div class="risk-row">
+                <div class="risk-label">Session completion</div>
+                <div class="risk-track"><div class="risk-fill" id="adherence-fill" style="width:52%;background:var(--amber)"></div></div>
+                <div class="risk-val" id="adherence-val" style="color:var(--amber)">52%</div>
+              </div>
+              <div class="risk-row" style="margin-top:6px;">
+                <div class="risk-label">Check-ins logged</div>
+                <div class="risk-track"><div class="risk-fill" style="width:60%;background:var(--amber)"></div></div>
+                <div class="risk-val" style="color:var(--amber)">60%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk indicators -->
+          <div class="dcard">
+            <div class="dcard-title">Clinical Risk Indicators</div>
+            <div class="risk-meter" id="risk-meter">
+              <div class="risk-row">
+                <div class="risk-label">Relapse risk</div>
+                <div class="risk-track"><div class="risk-fill" style="width:72%;background:var(--rose)"></div></div>
+                <div class="risk-val" style="color:var(--rose)">High</div>
+              </div>
+              <div class="risk-row">
+                <div class="risk-label">Dropout risk</div>
+                <div class="risk-track"><div class="risk-fill" style="width:65%;background:var(--amber)"></div></div>
+                <div class="risk-val" style="color:var(--amber)">Med</div>
+              </div>
+              <div class="risk-row">
+                <div class="risk-label">Safety concern</div>
+                <div class="risk-track"><div class="risk-fill" style="width:20%;background:var(--sage)"></div></div>
+                <div class="risk-val" style="color:var(--sage)">Low</div>
+              </div>
+              <div class="risk-row">
+                <div class="risk-label">Medication adherence</div>
+                <div class="risk-track"><div class="risk-fill" style="width:80%;background:var(--sage)"></div></div>
+                <div class="risk-val" style="color:var(--sage)">Good</div>
+              </div>
+            </div>
+            <div style="margin-top:16px;">
+              <div class="dcard-title" style="margin-bottom:10px;border:none;padding:0">Current Medication</div>
+              <div id="meds-list">
+                <div class="med-row"><div><div class="med-name">Sertraline</div><div class="med-dose">50mg · once daily</div></div><span class="med-status active">Active</span></div>
+                <div class="med-row"><div><div class="med-name">Lorazepam</div><div class="med-dose">0.5mg · PRN</div></div><span class="med-status paused">PRN</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom row -->
+        <div class="detail-grid wide">
+          <!-- Timeline -->
+          <div class="dcard">
+            <div class="dcard-title">Clinical Timeline <a href="#">Full history →</a></div>
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-date">Jun 4, 2026</div>
+                <div class="tl-dot-col"><div class="tl-dot" style="background:var(--rose)"></div><div class="tl-line"></div></div>
+                <div class="tl-content"><div class="tl-title">⚠ Automated alert triggered</div><div class="tl-body">PHQ-9 crossed moderate-severe threshold. Re-engagement notification sent. No patient response within 48h.</div></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-date">May 28, 2026</div>
+                <div class="tl-dot-col"><div class="tl-dot" style="background:var(--amber)"></div><div class="tl-line"></div></div>
+                <div class="tl-content"><div class="tl-title">Week 8 follow-up appointment</div><div class="tl-body">PHQ-9 at 14 — moderate range. Discussed work stressors as trigger. Recommended increased session frequency. Medication unchanged.</div></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-date">May 10, 2026</div>
+                <div class="tl-dot-col"><div class="tl-dot" style="background:var(--sage)"></div><div class="tl-line"></div></div>
+                <div class="tl-content"><div class="tl-title">Mid-programme check-in</div><div class="tl-body">PHQ-9 stable at 12. Patient reported app helpful for sleep tracking. CBT module completion 68%.</div></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-date">Mar 15, 2026</div>
+                <div class="tl-dot-col"><div class="tl-dot" style="background:var(--blue)"></div><div class="tl-line"></div></div>
+                <div class="tl-content"><div class="tl-title">DiGA prescribed · MindBridge activated</div><div class="tl-body">PHQ-9 baseline: 22 (severe). Freischaltcode issued. Patient onboarded same day. Programme: CBT-based, 12 weeks.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GAD-7 + Notes -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="dcard">
+              <div class="dcard-title">GAD-7 · Anxiety Scale</div>
+              <div style="margin-bottom:6px;display:flex;align-items:baseline;gap:8px;">
+                <span style="font-family:'Libre Baskerville';font-size:1.8rem;font-weight:700;color:var(--amber)">14</span>
+                <span style="font-size:0.72rem;color:var(--mid)">Moderate anxiety</span>
+              </div>
+              <div id="gad-items">
+                <div class="gad-row"><div class="gad-q">Feeling nervous or anxious</div><div class="gad-score s3">3</div></div>
+                <div class="gad-row"><div class="gad-q">Unable to stop worrying</div><div class="gad-score s2">2</div></div>
+                <div class="gad-row"><div class="gad-q">Worrying too much</div><div class="gad-score s3">3</div></div>
+                <div class="gad-row"><div class="gad-q">Trouble relaxing</div><div class="gad-score s2">2</div></div>
+                <div class="gad-row"><div class="gad-q">Restlessness</div><div class="gad-score s1">1</div></div>
+                <div class="gad-row"><div class="gad-q">Easily annoyed</div><div class="gad-score s2">2</div></div>
+                <div class="gad-row"><div class="gad-q">Feeling afraid</div><div class="gad-score s1">1</div></div>
+              </div>
+            </div>
+            <div class="dcard">
+              <div class="dcard-title">Clinical Notes</div>
+              <textarea class="note-area" placeholder="Add a clinical note for this patient…"></textarea>
+              <button class="note-save">Save Note</button>
+              <div style="clear:both"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<div class="portfolio-note">
+  MindBridge · HCP Clinical Dashboard · Portfolio Design Concept · Nada Abdelhalim · Mental Health Digital Therapeutics
+</div>
+
+<script>
+// ── VIEW SWITCHING ──
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+}
+
+// ── PATIENT DATA ──
+const PATIENTS = {
+  anna: {
+    name: 'Anna Müller',
+    meta: 'MBR-0041 · Female · 34 y/o · Active since March 2026 · Week 10 of 12',
+    phq: 18, severity: 'Moderately Severe', trend: '↑ +4 pts over 2 weeks', trendClass: 'worse',
+    adherence: 52, adherenceColor: 'var(--amber)',
+    alert: true,
+    alertTitle: 'PHQ-9 Worsening — Clinical Review Recommended',
+    alertText: 'Score increased by 4 points over 2 weeks (14 → 18). Patient adherence has dropped to 52%. Automated re-engagement message sent 2 days ago — no response. Consider direct outreach or urgent appointment.',
+    moodData: [40,35,50,30,20,15,10],
+    moodColors: ['var(--sage-m)','var(--sage-m)','var(--amber-m)','var(--sage-m)','var(--rose-m)','var(--rose-m)','var(--rose-m)']
+  },
+  thomas: {
+    name: 'Thomas Hartmann',
+    meta: 'MBR-0038 · Male · 47 y/o · Active since February 2026 · Week 14 of 16',
+    phq: 11, severity: 'Moderate', trend: '→ ±1 pt (stable)', trendClass: 'better',
+    adherence: 78, adherenceColor: 'var(--sage)',
+    alert: false,
+    moodData: [55,60,58,62,65,60,63],
+    moodColors: ['var(--amber-m)','var(--amber-m)','var(--amber-m)','var(--amber-m)','var(--amber-m)','var(--amber-m)','var(--amber-m)']
+  },
+  sarah: {
+    name: 'Sarah Keller',
+    meta: 'MBR-0029 · Female · 28 y/o · Active since January 2026 · Week 20 of 24',
+    phq: 7, severity: 'Mild', trend: '↓ −6 pts over 4 weeks', trendClass: 'better',
+    adherence: 91, adherenceColor: 'var(--sage)',
+    alert: false,
+    moodData: [70,72,75,78,76,80,82],
+    moodColors: ['var(--sage-m)','var(--sage-m)','var(--sage-m)','var(--sage-m)','var(--sage-m)','var(--sage-m)','var(--sage-m)']
+  }
+};
+
+function showDetail(patientId) {
+  if (patientId === 'list') { showView('list'); return; }
+  const p = PATIENTS[patientId];
+  if (!p) return;
+
+  document.getElementById('detail-name').textContent = p.name;
+  document.getElementById('detail-meta').textContent = p.meta;
+  document.getElementById('detail-phq').textContent = p.phq;
+  document.getElementById('detail-severity').textContent = p.severity;
+
+  const trendEl = document.getElementById('detail-trend');
+  trendEl.textContent = p.trend;
+  trendEl.className = 'score-change ' + p.trendClass;
+
+  const phqColor = p.phq >= 20 ? 'var(--rose)' : p.phq >= 15 ? 'var(--amber)' : p.phq >= 10 ? 'var(--amber)' : 'var(--sage)';
+  document.getElementById('detail-phq').style.color = phqColor;
+
+  document.getElementById('adherence-fill').style.width = p.adherence + '%';
+  document.getElementById('adherence-fill').style.background = p.adherenceColor;
+  document.getElementById('adherence-val').textContent = p.adherence + '%';
+  document.getElementById('adherence-val').style.color = p.adherenceColor;
+
+  const alertEl = document.getElementById('detail-alert');
+  alertEl.style.display = p.alert ? 'flex' : 'none';
+  if (p.alert) {
+    document.getElementById('alert-title').textContent = p.alertTitle;
+    document.getElementById('alert-text').textContent = p.alertText;
+  }
+
+  // mood chart
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  document.getElementById('mood-chart').innerHTML = p.moodData.map((v,i) =>
+    `<div class="mood-bar-wrap">
+      <div class="mood-bar" style="height:${v}%;background:${p.moodColors[i]}"></div>
+      <div class="mood-day">${days[i]}</div>
+    </div>`
+  ).join('');
+
+  showView('detail');
+}
+
+// ── FILTER ──
+function filterClick(btn) {
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
